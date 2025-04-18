@@ -1,5 +1,5 @@
 -- sequences for players, games
-CREATE SEQUENCE seq_players_id START WITH 1 NOCACHE;   -- pouzit pri vkladani
+CREATE SEQUENCE seq_players_id START WITH 1 NOCACHE;
 CREATE SEQUENCE seq_game_id START WITH 1 NOCACHE;
 CREATE SEQUENCE seq_moves_id START WITH 1 NOCACHE;
 
