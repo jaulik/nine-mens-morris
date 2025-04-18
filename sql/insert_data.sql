@@ -45,6 +45,3 @@ INSERT INTO moves (move_id, game_id, player_id, position_from, position_to)
 VALUES (seq_moves_id.NEXTVAL, 4, 2, NULL, 'E1');
 INSERT INTO moves (move_id, game_id, player_id, position_from, position_to)
 VALUES (seq_moves_id.NEXTVAL, 4, 4, NULL, 'C4');
-
-
--- TODO: table statistics will be done by PL/SQL procedure and updated by tigger
