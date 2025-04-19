@@ -14,11 +14,11 @@ END;
 
 -- triggers
 CREATE OR REPLACE TRIGGER statistics_trg
-AFTER INSERT OR UPDATE ON games FOR EACH ROW
+AFTER INSERT OR UPDATE ON games
 BEGIN
   update_statistics;
 END;
-
+/
 
 CREATE OR REPLACE TRIGGER total_moves_trg
 AFTER INSERT ON moves FOR EACH ROW
@@ -34,7 +34,8 @@ DECLARE
            ROUND(AVG((g.end_time - g.start_time) * 24 * 60), 2) AS avg_duration
     FROM players p JOIN games g ON p.player_id IN (g.player1_id, g.player2_id)
     WHERE g.end_time IS NOT NULL GROUP BY p.name
-    HAVING COUNT(g.game_id) > 1 ORDER BY avg_duration ASC;
+    HAVING COUNT(g.game_id) > 1
+  ORDER BY avg_duration ASC;
 
   rec c_player_durations%ROWTYPE;
 BEGIN
