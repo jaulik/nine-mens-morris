@@ -1,11 +1,10 @@
--- sequences for players, games
+-- sequences for players, games, moves
 CREATE SEQUENCE seq_players_id START WITH 1 NOCACHE;
 CREATE SEQUENCE seq_game_id START WITH 1 NOCACHE;
 CREATE SEQUENCE seq_moves_id START WITH 1 NOCACHE;
 
 -- table for players
 CREATE TABLE players (player_id integer PRIMARY KEY, name varchar2(20), registered_at date default SYSDATE);
-
 
 -- table for games
 CREATE TABLE games (game_id integer PRIMARY KEY,
