@@ -29,14 +29,18 @@ END;
 
 -- cursor
 DECLARE
-  CURSOR c_games_avg IS
-    SELECT game_id, ROUND((end_time - start_time) * 24 * 60, 1) AS duration_min FROM games
-    WHERE end_time IS NOT NULL;
-  rec c_games_avg%ROWTYPE;
+  CURSOR c_player_durations IS
+    SELECT p.name, COUNT(g.game_id) AS games, 
+           ROUND(AVG((g.end_time - g.start_time) * 24 * 60), 2) AS avg_duration
+    FROM players p JOIN games g ON p.player_id IN (g.player1_id, g.player2_id)
+    WHERE g.end_time IS NOT NULL GROUP BY p.name
+    HAVING COUNT(g.game_id) > 1 ORDER BY avg_duration ASC;
+
+  rec c_player_durations%ROWTYPE;
 BEGIN
-  DBMS_OUTPUT.PUT_LINE('Doba her (min):');
-  FOR rec IN c_games_avg LOOP
-    DBMS_OUTPUT.PUT_LINE('Game ' || rec.game_id || ': ' || rec.duration_min || 'min');
+  DBMS_OUTPUT.PUT_LINE('Average time by player:');
+  FOR rec IN c_player_durations LOOP
+    DBMS_OUTPUT.PUT_LINE(rec.name || ' (' || rec.games || ' games): ' || rec.avg_duration || ' min');
   END LOOP;
 END;
 /
