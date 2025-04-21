@@ -4,17 +4,17 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS players (
   player_id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  registered_at DATATIME DEFAULT (CURRENT_TIMESTAMP));
+  registered_at DATETIME DEFAULT (CURRENT_TIMESTAMP));
 
 -- games
 CREATE TABLE IF NOT EXISTS games (
   game_id INTEGER PRIMARY KEY AUTOINCREMENT,
   player1_id INTEGER NOT NULL REFERENCES players(player_id),
   player2_id INTEGER NOT NULL REFERENCES players(player_id),
-  start_time DATATIME DEFAULT (CURRENT_TIMESTAMP),
-  end_time DATATIME,
+  start_time DATETIME,
+  end_time DATETIME,
   winner_id INTEGER REFERENCES players(player_id),
-  total_moves INTEGER NOT NULL);
+  total_moves INTEGER);
 
 -- statistics
 CREATE TABLE IF NOT EXISTS statistics (
@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS statistics (
 
 -- trigger to recalculate statistics
 CREATE TRIGGER IF NOT EXISTS trg_update_stats
-AFTER INSERT ON games
+AFTER UPDATE OF end_time ON games
+WHEN NEW.end_time IS NOT NULL
 BEGIN
   -- increase the amount of games played (both players)
   UPDATE statistics SET games_played = games_played + 1
