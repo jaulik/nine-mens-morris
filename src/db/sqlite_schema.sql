@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 -- players
 CREATE TABLE IF NOT EXISTS players (
   player_id INTEGER PRIMARY KEY AUTOINCREMENT,
