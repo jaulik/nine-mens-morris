@@ -11,8 +11,8 @@ def drop_tables():
     conn = sqlite_setup.get_connection()
     cursor = conn.cursor()
     script_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               '..', '..', 'sql',
-                                               'drop_sqlite_db.sql'))
+                                               '..', '..', 'sql', 'sqlite',
+                                               'drop_db.sql'))
     with open(script_path, 'r') as file:
         cursor.executescript(file.read())
     conn.commit()
