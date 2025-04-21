@@ -16,8 +16,8 @@ def create_tables():
     conn = get_connection()
     cursor = conn.cursor()
     schema_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               '..', '..', 'sql',
-                                               'sqlite_schema.sql'))
+                                               '..', '..', 'sql', 'sqlite',
+                                               'create_schema.sql'))
     with open(schema_path, 'r') as file:
         cursor.executescript(file.read())
     conn.commit()
