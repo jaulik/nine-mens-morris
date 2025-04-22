@@ -3,24 +3,38 @@
 
 ## game
 
+TODO
+
 ## db
 
+The db module contains all database-related functionality for working with the **SQLite** backend. It handles schema creation, data access for players/games/statistics, and provides helper scripts for development. 
+
+Contents of the folder:
+
+- `sqlite_setup.py`	- Establishing a SQLite connection and initializing the schema using the script `sql/sqlite/create_schema.sql`.
+- `manage_db.py`	- Main database interface with functions to add players, start/end games, and retrieve game statistics.
+- `clean_db.py` 	– Development helper script to drop all tables using the `sql/sqlite/drop_db.sql` script.
+- `nine_mens_morris.db` – The SQLite database file (can be ignored in version control).
 
 # SQL
 
 ## /sqlite - SQLite Runtime
+
 The sql/sqlite directory contains two SQLite scripts. These scripts serve to setup or clean **SQLite database**.
 
- - `sqlite/create_schema.sql`		- creates tables (players, games, statistics) and tiggers
- - `sqlite/drop_db.sql`			- development helper to drop all tables
+Contents of folder:
+
+ - `sqlite/create_schema.sql`		- Creates tables (players, games, statistics) and triggers.
+ - `sqlite/drop_db.sql`			- Development helper, drops all tables.
 
 ## /oracle - school project only (Oracle SQL)
 
 The sql/oracle directory contains a complete set of Oracle SQL scripts prepared for the Database Systems course project.
 These scripts are not part of the runtime application, they are provided for demonstration of Oracle/PL‑SQL skills.
 
- - `oracle/create_tables.sql`		- creates tables, seqences and defines referential intengrity constraints
- - `oracle/insert_data.sql`		- inserts sample data into tables
- - `oracle/triggers_update.sql`		- two triggers, procedure, cursor, recalculates statistics table
- - `oracle/select.sql`			- several select statements
+Contents of folder:
 
+ - `oracle/create_tables.sql`		- Creates tables, seqences and defines referential intengrity constraints.
+ - `oracle/insert_data.sql`		- Inserts sample data into tables.
+ - `oracle/triggers_update.sql`		- Creates two triggers, procedure, cursor and recalculates statistics table.
+ - `oracle/select.sql`			- Contains several select statements.
