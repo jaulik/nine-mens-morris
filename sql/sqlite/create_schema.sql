@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS games (
   start_time DATETIME,
   end_time DATETIME,
   winner_id INTEGER REFERENCES players(player_id),
-  total_moves INTEGER);
+  total_moves INTEGER NOT NULL);
 
 -- statistics
 CREATE TABLE IF NOT EXISTS statistics (
@@ -36,7 +36,10 @@ BEGIN
   WHERE player_id = NEW.winner_id;
   -- recalculate avg moves to win (winner)
   UPDATE statistics SET average_moves_to_win =
-    ((average_moves_to_win * (games_won - 1) + total_moves) / games_won)
+    CASE
+      WHEN average_moves_to_win IS NULL THEN NEW.total_moves
+      ELSE ((average_moves_to_win * (games_won - 1) + NEW.total_moves) / games_won)
+    END
     WHERE player_id = NEW.winner_id;
 END;
 

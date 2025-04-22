@@ -1,5 +1,9 @@
 import os
-import sqlite_setup
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..', '..', 'src')))
+from db import sqlite_setup
 
 # Path to the SQLite database file
 DB_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
