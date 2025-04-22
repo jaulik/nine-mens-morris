@@ -1,9 +1,9 @@
 import os
-import sqlite_setup
+import sys
 
-# Path to the SQLite database file
-DB_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                       'nine_mens_morris.db'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..', '..', 'src')))
+from db import sqlite_setup
 
 
 # Insert a new player into the players table and return their ID.
@@ -34,12 +34,15 @@ VALUES (?, ?, CURRENT_TIMESTAMP, 0)
 
 
 # End a game by updating the end time, winner, and total moves.
-def end_game(player1_id, player2_id, winner_id: int, total_moves: int, game_id: int):
+def end_game(winner_id: int, total_moves: int, game_id: int):
     conn = sqlite_setup.get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-UPDATE games SET end_time = CURRENT_TIMESTAMP, winner_id = ?, total_moves = ?
-WHERE game_id = ?
+    UPDATE games
+    SET end_time = CURRENT_TIMESTAMP,
+        winner_id = ?,
+        total_moves = ?
+    WHERE game_id = ?
 """, (winner_id, total_moves, game_id))
     conn.commit()
     conn.close()
