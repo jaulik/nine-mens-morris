@@ -8,6 +8,7 @@ DB_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
 
 def get_connection():
     conn = sqlite3.connect(DB_FILE)
+    conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 

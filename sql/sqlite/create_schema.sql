@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS games (
   start_time DATETIME,
   end_time DATETIME,
   winner_id INTEGER REFERENCES players(player_id),
-  total_moves INTEGER NOT NULL);
+  total_moves INTEGER NOT NULL,
+  CHECK (winner_id IS NULL OR winner_id = player1_id OR winner_id = player2_id));
 
 -- statistics
 CREATE TABLE IF NOT EXISTS statistics (

@@ -44,6 +44,12 @@ def end_game(winner_id: int, total_moves: int, game_id: int):
         total_moves = ?
     WHERE game_id = ?
 """, (winner_id, total_moves, game_id))
+
+    if cursor.rowcount == 0:
+        conn.rollback()
+        conn.close()
+        raise ValueError(f"No game found with game_id={game_id}")
+
     conn.commit()
     conn.close()
 
