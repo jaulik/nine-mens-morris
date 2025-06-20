@@ -46,6 +46,15 @@ class TestDbFunctions(unittest.TestCase):
         self.assertEqual(milan_stats['average_moves_to_win'], None)
         self.assertEqual(milan_stats['winrate'], 0.0)
 
+    def no_games_stats(self):
+        id1 = manage_db.add_player("Angela")
+        angela_stats = manage_db.get_statistics(id1)
+
+        self.assertEqual(angela_stats['games_played'], 0)
+        self.assertEqual(angela_stats['games_won'], 0)
+        self.assertEqual(angela_stats['average_moves_to_win'], None)
+        self.assertEqual(angela_stats['winrate'], None)
+
     def test_duplicate_player_names(self) -> None:
         id1 = manage_db.add_player("Eva")
         id2 = manage_db.add_player("Eva")
