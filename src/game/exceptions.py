@@ -1,4 +1,5 @@
 from position import Position
+from player import Player
 
 class PositionAlreadyOccupiedError(Exception):
     def __init__(self, position: Position):
@@ -6,11 +7,17 @@ class PositionAlreadyOccupiedError(Exception):
         self.position_occupied_by = position.get_occupied_by()
         super().__init__(f"Position {self.position_id} is already occupied by player {self.position_occupied_by}.")
 
+class InvalidMoveError(Exception):
+    def __init__(self, from_position: Position, to_position: Position):
+        self.from_pos_id = from_position.get_id()
+        self.to_pos_id = to_position.get_id()
+        super().__init__(f"Move from position {self.from_pos_id} to position {self.to_pos_id} is not permitted.")
+
 class InvalidPieceRemovalError(Exception):
-    def __init__(self, position_id: int, attempted_by: int, actual_owner: int | None):
+    def __init__(self, position_id: int, attempted_by: int, actual_owner: Player | None):
         message = (f"Cannot remove piece at position {position_id}. "
                    f"Attempted by player {attempted_by}, but position is "
-                   f"{'empty' if actual_owner is None else f'occupied by player {actual_owner}'}.")
+                   f"{'empty' if actual_owner is None else f'occupied by player {actual_owner.get_id()}'}.")
         super().__init__(message)
         self.position_id = position_id
         self.attempted_by = attempted_by

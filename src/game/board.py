@@ -58,24 +58,31 @@ class Board:
             23: Position(23, [14, 22]),
         }
 
+    # TODO: unmodifiable
     def get_board(self) -> dict[int, Position]:
         return self.__positions.copy()
     
+    # TODO: unmodifiable
     def get_position(self, position_id: int) -> Position:
          return self.get_board()[position_id]
 
-    def place_piece(self, player_id: int, position_id: int) -> None:
+    def place_piece(self, player: Player, position_id: int) -> None:
         position = self.get_position(position_id)
 
         if position.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(position)
 
-        position.set_occupied_by(player_id)
+        position.set_occupied_by(player)
 
 
     def move_piece(self, from_pos_id: int, to_pos_id: int) -> None:
         from_pos = self.get_position(from_pos_id)
         to_pos = self.get_position(to_pos_id)
+
+        from_pos_player = from_pos.get_occupied_by()
+        if to_pos.get_id() not in from_pos.get_neighbors()\
+            and from_pos_player is not None and not from_pos_player.can_jump():
+            raise InvalidMoveError(from_pos, to_pos)
 
         if to_pos.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(to_pos)
@@ -96,4 +103,3 @@ class Board:
                 all(self.get_position(pos_id).get_occupied_by() == player_id for pos_id in mill):
                        return True
         return False
-        
