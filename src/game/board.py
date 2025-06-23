@@ -1,5 +1,5 @@
 from position import Position
-from exceptions import PositionAlreadyOccupiedError
+from exceptions import *
 
 # Positions 0–23 correspond to points on the game board.
 # Each position knows its neighbors - that is, where a piece can be moved.
@@ -17,6 +17,14 @@ from exceptions import PositionAlreadyOccupiedError
 #    |  18---19---20   |
 #    |        |        |
 #   21-------22-------23
+
+MILLS: list[list[int]] = [[0, 1, 2], [3, 4, 5], [6, 7, 8],
+         [0, 9, 21], [3, 10, 18], [6, 11, 15],
+         [1, 4, 7], [16, 19, 22], [8, 12, 17],
+         [5, 13, 20], [2, 14, 23], [9, 10, 11],
+         [12, 13, 14], [15, 16, 17], [18, 19, 20],
+         [21, 22, 23]]
+
 
 class Board:
     def __init__(self):
@@ -52,15 +60,40 @@ class Board:
 
     def get_board(self) -> dict[int, Position]:
         return self.__positions.copy()
+    
+    def get_position(self, position_id: int) -> Position:
+         return self.get_board()[position_id]
 
-    def place_piece(self, player_id: int, position: Position) -> None:
+    def place_piece(self, player_id: int, position_id: int) -> None:
+        position = self.get_position(position_id)
+
         if position.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(position)
+
         position.set_occupied_by(player_id)
 
 
-    def move_piece(self, from_pos: Position, to_pos: Position) -> None:
+    def move_piece(self, from_pos_id: int, to_pos_id: int) -> None:
+        from_pos = self.get_position(from_pos_id)
+        to_pos = self.get_position(to_pos_id)
+
         if to_pos.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(to_pos)
+    
         to_pos.set_occupied_by(from_pos.get_occupied_by())
         from_pos.set_occupied_by(None)
+
+    def remove_piece(self, position_id: int, player_id: int, opponent_id) -> None:
+        position = self.get_position(position_id)
+        occupied_by = position.get_occupied_by()
+        if occupied_by != opponent_id:
+            raise InvalidPieceRemovalError(position_id, player_id, occupied_by)
+        position.set_occupied_by(None)
+
+    def is_mill(self, position_id: int, player_id: int) -> bool:
+        for mill in MILLS:
+             if position_id in mill and\
+                all(self.get_position(pos_id).get_occupied_by() == player_id for pos_id in mill):
+                       return True
+        return False
+        
