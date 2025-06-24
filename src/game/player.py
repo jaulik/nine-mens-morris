@@ -15,7 +15,6 @@ class Player:
     def __hash__(self):
         return hash(self.get_id, self.get_name)
 
-
     def get_name(self) -> str:
         return self.__name
 
@@ -31,4 +30,11 @@ class Player:
     def can_jump(self) -> bool:
         return self.get_pieces_on_board() <= 3 and self.get_pieces_in_hand() == 0
 
-    # TODO: increase and decrease pieces methods
+    def decrement_on_board(self):
+        self.__pieces_on_board -= 1
+
+    def increment_on_board(self):
+        self.__pieces_on_board += 1
+
+    def decrement_in_hand(self):
+        self.__pieces_in_hand -= 1

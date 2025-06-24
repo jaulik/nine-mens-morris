@@ -90,11 +90,13 @@ class Board:
         to_pos.set_occupied_by(from_pos.get_occupied_by())
         from_pos.set_occupied_by(None)
 
-    def remove_piece(self, position_id: int, player_id: int, opponent_id) -> None:
+    def remove_piece(self, position_id: int, player_id: int, opponent_id: int) -> None:
         position = self.get_position(position_id)
         occupied_by = position.get_occupied_by()
         if occupied_by != opponent_id:
-            raise InvalidPieceRemovalError(position_id, player_id, occupied_by)
+            raise InvalidPieceRemovalError(position_id,
+                                           player_id,
+                                           occupied_by.get_id() if occupied_by is not None else None)
         position.set_occupied_by(None)
 
     def is_mill(self, position_id: int, player_id: int) -> bool:
