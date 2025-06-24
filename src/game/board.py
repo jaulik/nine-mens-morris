@@ -67,15 +67,21 @@ class Board:
          return self.get_board()[position_id]
 
     def place_piece(self, player: Player, position_id: int) -> None:
+        if not (0 <= position_id <= 23):
+            raise PositionOutOfBoundsError(position_id)
+        
         position = self.get_position(position_id)
-
         if position.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(position)
 
         position.set_occupied_by(player)
 
 
-    def move_piece(self, from_pos_id: int, to_pos_id: int) -> None:
+    def move_piece(self, from_pos_id: int, to_pos_id: int, curr_player: Player) -> None:
+        if not (0 <= from_pos_id <= 23 and 0 <= to_pos_id <= 23):
+            raise PositionOutOfBoundsError(from_pos_id
+                                           if from_pos_id < 0 or from_pos_id > 23 else to_pos_id)
+        
         from_pos = self.get_position(from_pos_id)
         to_pos = self.get_position(to_pos_id)
 
@@ -84,19 +90,26 @@ class Board:
             and from_pos_player is not None and not from_pos_player.can_jump():
             raise InvalidMoveError(from_pos, to_pos)
 
+        if from_pos_player != curr_player:
+            raise InvalidMoveError(from_pos, to_pos)
+
         if to_pos.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(to_pos)
     
         to_pos.set_occupied_by(from_pos.get_occupied_by())
         from_pos.set_occupied_by(None)
 
-    def remove_piece(self, position_id: int, player_id: int, opponent_id: int) -> None:
+    def remove_piece(self, position_id: int, curr_player: Player, opponent: Player) -> None:
+        if not (0 <= position_id <= 23):
+            raise PositionOutOfBoundsError(position_id)
+        
         position = self.get_position(position_id)
         occupied_by = position.get_occupied_by()
-        if occupied_by != opponent_id:
+        if occupied_by != opponent or occupied_by is None or occupied_by == curr_player:
             raise InvalidPieceRemovalError(position_id,
-                                           player_id,
+                                           curr_player.get_id(),
                                            occupied_by.get_id() if occupied_by is not None else None)
+        
         position.set_occupied_by(None)
 
     def is_mill(self, position_id: int, player_id: int) -> bool:
