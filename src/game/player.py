@@ -28,7 +28,7 @@ class Player:
         return self.__pieces_in_hand
 
     def can_jump(self) -> bool:
-        return self.get_pieces_on_board() <= 3 and self.get_pieces_in_hand() == 0
+        return 0 < self.get_pieces_on_board() == 3 and self.get_pieces_in_hand() == 0
 
     def decrement_on_board(self):
         self.__pieces_on_board -= 1
