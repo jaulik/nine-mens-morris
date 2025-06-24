@@ -14,9 +14,6 @@ class Game:
         self.__mills_formed = False     # flag that the last move caused the creation of a mill
 
 
-    # def get_board_positions(self) -> dict[int, Position]:
-    #     return self.__board.get_board()
-
     def get_state(self) -> GameState:
         return self.__state
     
@@ -35,14 +32,35 @@ class Game:
 
     def switch_current_player(self) -> None:
         if self.get_current_player() == self.get_player1():
-            self.__current_player = self.get_player1()
-        else:
             self.__current_player = self.get_player2()
+        else:
+            self.__current_player = self.get_player1()
 
 
+    def get_all_possible_moves(self, player: Player) -> list[int]:
+        pieces_id = []
+        for _, pos in self.__board.get_board().items():
+            if pos.get_occupied_by() == player:
+                for neighbor_id in pos.get_neighbors():
+                    if self.__board.get_position(neighbor_id).get_occupied_by() is None:
+                        pieces_id.append(neighbor_id)
+
+        return pieces_id
 
 
-    def play(self, action: str, *args) -> None:
+    def game_over(self) -> bool:
+        player1 = self.get_player1()
+        player2 = self.get_player2()
+
+        return (player1.get_pieces_in_hand() == 0 and player1.get_pieces_on_board() <= 2) or\
+        (player2.get_pieces_in_hand() == 0 and player2.get_pieces_on_board() <= 2) or\
+        self.get_all_possible_moves(player1) == [] or self.get_all_possible_moves(player2) == []
+
+
+    # TODO: Pozor mlýn nesmí být podruhé na stejném místě (nesmíte ho rozbořit a znovu postavit na stejném místě).
+    # TODO: Nesmí se odebírat kameny, které jsou součástí „mlýna“. (Kontrola v Board?)
+
+    def play_round(self, action: str, *args) -> None:
         """
         action: "place", "move", "remove"
         args:
@@ -50,7 +68,7 @@ class Game:
           - move:    from_id, to_id
           - remove:  position_id
         """
-        if action == "place":
+        if action == "place" and self.__state == GameState.PLACING and not self.__mills_formed:
             try:
                 pos_id = args[0]
                 self.__board.place_piece(self.get_current_player(), pos_id)
@@ -64,8 +82,14 @@ class Game:
             
             except (PositionOutOfBoundsError, PositionAlreadyOccupiedError) as e:
                 print(e)
+            finally:
+                if self.get_player1().get_pieces_in_hand() == 0 and\
+                    self.get_player2().get_pieces_in_hand() == 0:
+                    self.__state = GameState.MOVING
 
-        elif action == "move":
+        elif action == "move" and\
+            (self.__state == GameState.MOVING or self.__state == GameState.JUMPING)\
+            and not self.__mills_formed:
             try:
                 from_pos_id, to_pos_id = args
                 self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
@@ -77,13 +101,17 @@ class Game:
             except (PositionOutOfBoundsError, PositionAlreadyOccupiedError, InvalidMoveError) as e:
                 print(e)
 
-        elif action == "remove":
+        elif action == "remove" and self.__mills_formed:
             try:
                 self.__board.remove_piece(args[0],
                                           self.get_current_player(),
                                           self.get_opposite_player())
 
                 self.__mills_formed = False
+                self.get_opposite_player().decrement_on_board()
+                if self.get_opposite_player().can_jump():
+                    self.__state = GameState.JUMPING
+                
                 self.switch_current_player()
                 self.get_opposite_player().decrement_on_board()
 
@@ -91,4 +119,7 @@ class Game:
                 print(e)
         else:
             raise ValueError(f"Unknown action '{action}'")
+
+        if self.game_over():
+            self.__state = GameState.GAME_OVER
 

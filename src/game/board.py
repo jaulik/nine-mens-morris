@@ -109,7 +109,7 @@ class Board:
             raise InvalidPieceRemovalError(position_id,
                                            curr_player.get_id(),
                                            occupied_by.get_id() if occupied_by is not None else None)
-        
+
         position.set_occupied_by(None)
 
     def is_mill(self, position_id: int, player_id: int) -> bool:
