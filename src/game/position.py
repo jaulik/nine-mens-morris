@@ -1,4 +1,4 @@
-from player import Player
+from src.game.player import Player
 
 class Position:
     def __init__(self, id: int, neighbors: list[int]):

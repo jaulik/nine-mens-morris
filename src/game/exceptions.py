@@ -1,11 +1,10 @@
-from position import Position
-from player import Player
+from src.game.position import Position
 
 class PositionAlreadyOccupiedError(Exception):
     def __init__(self, position: Position):
         self.position_id = position.get_id()
-        self.position_occupied_by = position.get_occupied_by()
-        super().__init__(f"Position {self.position_id} is already occupied by player {self.position_occupied_by}.")
+        self.position_occupied_by_id = position.get_occupied_by().get_id()
+        super().__init__(f"Position {self.position_id} is already occupied by player ID: {self.position_occupied_by_id}.")
 
 class InvalidMoveError(Exception):
     def __init__(self, from_position: Position, to_position: Position):
