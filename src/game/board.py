@@ -1,5 +1,6 @@
-from position import Position
-from exceptions import *
+from src.game.position import Position
+from src.game.player import Player
+from src.game.exceptions import *
 
 # Positions 0–23 correspond to points on the game board.
 # Each position knows its neighbors - that is, where a piece can be moved.
@@ -86,11 +87,10 @@ class Board:
         to_pos = self.get_position(to_pos_id)
 
         from_pos_player = from_pos.get_occupied_by()
-        if to_pos.get_id() not in from_pos.get_neighbors()\
-            and from_pos_player is not None and not from_pos_player.can_jump():
-            raise InvalidMoveError(from_pos, to_pos)
-
         if from_pos_player != curr_player:
+            raise InvalidMoveError(from_pos, to_pos)
+        
+        if to_pos.get_id() not in from_pos.get_neighbors() and not from_pos_player.can_jump():
             raise InvalidMoveError(from_pos, to_pos)
 
         if to_pos.get_occupied_by() is not None:
@@ -112,16 +112,58 @@ class Board:
         
         # Stones that are part of the mill cannot be removed
         for mill in MILLS:
-             if position in mill and all(self.get_position(pid).get_occupied_by() == opponent for pid in mill):
+             if position_id in mill and all(self.get_position(pid).get_occupied_by() == opponent for pid in mill):
                   raise InvalidPieceRemovalError(position_id,
                                                  curr_player.get_id(),
                                                  opponent.get_id())
 
         position.set_occupied_by(None)
 
-    def get_mill(self, position_id: int, player_id: int) -> list[int] | None:
+    def get_mill(self, position_id: int, player: Player) -> list[int] | None:
         for mill in MILLS:
              if position_id in mill and\
-                all(self.get_position(pos_id).get_occupied_by() == player_id for pos_id in mill):
+                all(self.get_position(pos_id).get_occupied_by() == player for pos_id in mill):
                        return mill
         return None
+
+
+    def __str__(self):
+        def f(i):
+            pos = self.get_position(i)
+            occ = pos.get_occupied_by()
+            val = occ.get_id() if occ else "X"
+            return f"{i}:{val}"
+
+        p = [f(i) for i in range(24)]
+
+        return f"""
+# {p[0]} ------------ {p[1]} ------------ {p[2]}
+#  |               |                  |
+#  |   {p[3]}--------{p[4]} -------- {p[5]}    |
+#  |    |          |             |    |
+#  |    |    {p[6]}--{p[7]} -- {p[8]}     |    |
+#  |    |     |           |      |    |
+# {p[9]}--{p[10]}--{p[11]}       {p[12]}--{p[13]}--{p[14]}
+#  |    |      |           |     |    |
+#  |    |    {p[15]}--{p[16]}--{p[17]}    |    |
+#  |    |            |           |    |
+#  |   {p[18]}--------{p[19]}--------{p[20]}   |
+#  |                |                 |
+# {p[21]}------------{p[22]}------------ {p[23]}
+""".strip()
+
+
+
+# 0:X ------------ 1:X ------------ 2:X
+#  |               |                  |
+#  |   3:X--------4:X -------- 5:X    |
+#  |    |          |             |    |
+#  |    |    6:X--7:X -- 8:X     |    |
+#  |    |     |           |      |    |
+# 9:X--10:X--11:X       12:X--13:X--14:X
+#  |    |      |           |     |    |
+#  |    |     15:X--16:X--17:X   |    |
+#  |    |            |           |    |
+#  |   18:X--------19:X--------20:X   |
+#  |                |                 |
+# 21:X------------22:X------------ 23:X

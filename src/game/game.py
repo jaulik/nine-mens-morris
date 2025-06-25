@@ -1,8 +1,7 @@
-from player import Player
-from board import Board
-from position import Position
-from game_state import GameState
-from exceptions import *
+from src.game.player import Player
+from src.game.board import Board
+from src.game.game_state import GameState
+from src.game.exceptions import *
 
 class Game:
     def __init__(self, player1: Player, player2: Player):
@@ -12,7 +11,10 @@ class Game:
         self.__current_player = player1
         self.__state = GameState.PLACING
         self.__mills_formed = False     # flag that the last move caused the creation of a mill
+        self.__rounds = 0
 
+    def get_rounds(self):
+        return self.__rounds
 
     def get_state(self) -> GameState:
         return self.__state
@@ -27,8 +29,8 @@ class Game:
         return self.__current_player
     
     def get_opposite_player(self) -> Player:
-        return self.get_player1() if self.get_current_player() == self.get_player1()\
-            else self.get_player2()
+        return self.get_player2() if self.get_current_player() == self.get_player1()\
+            else self.get_player1()
 
     def switch_current_player(self) -> None:
         if self.get_current_player() == self.get_player1():
@@ -49,15 +51,14 @@ class Game:
 
 
     def game_over(self) -> bool:
-        player1 = self.get_player1()
-        player2 = self.get_player2()
+        if self.get_state() == GameState.PLACING:
+            return False
 
-        return (player1.get_pieces_in_hand() == 0 and player1.get_pieces_on_board() <= 2) or\
-        (player2.get_pieces_in_hand() == 0 and player2.get_pieces_on_board() <= 2) or\
-        self.get_all_possible_moves(player1) == [] or self.get_all_possible_moves(player2) == []
+        opponent = self.get_opposite_player()
+        return opponent.get_pieces_on_board() <= 2 or self.get_all_possible_moves(opponent) == []
 
     def get_winner(self) -> Player | None:
-        if self.__state != GameState.GAME_OVER:
+        if self.get_state() != GameState.GAME_OVER:
             return None
         players = [self.get_player1(), self.get_player2()]
         for player in players:
@@ -74,14 +75,14 @@ class Game:
           - move:    from_id, to_id
           - remove:  position_id
         """
-        if action == "place" and self.__state == GameState.PLACING and not self.__mills_formed:
+        if action == "place" and self.get_state() == GameState.PLACING:
             try:
                 pos_id = args[0]
                 self.__board.place_piece(self.get_current_player(), pos_id)
                 self.get_current_player().decrement_in_hand()
                 self.get_current_player().increment_on_board()
 
-                mill = self.__board.get_mill(pos_id, self.get_current_player().get_id())
+                mill = self.__board.get_mill(pos_id, self.get_current_player())
                 if mill is not None and not self.get_current_player().has_had_mill(mill):
                     self.__mills_formed = True
                     self.get_current_player().add_mill(mill)
@@ -96,13 +97,13 @@ class Game:
                     self.__state = GameState.MOVING
 
         elif action == "move" and\
-            (self.__state == GameState.MOVING or self.__state == GameState.JUMPING)\
+            (self.get_state() == GameState.MOVING or self.get_state() == GameState.JUMPING)\
             and not self.__mills_formed:
             try:
                 from_pos_id, to_pos_id = args
                 self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
                 
-                mill = self.__board.get_mill(pos_id, self.get_current_player().get_id())
+                mill = self.__board.get_mill(to_pos_id, self.get_current_player())
                 if mill is not None and not self.get_current_player().has_had_mill(mill):
                     self.__mills_formed = True
                     self.get_current_player().add_mill(mill)
@@ -112,7 +113,7 @@ class Game:
             except (PositionOutOfBoundsError, PositionAlreadyOccupiedError, InvalidMoveError) as e:
                 print(e)
 
-        elif action == "remove" and self.__mills_formed:
+        elif action == "remove":
             try:
                 self.__board.remove_piece(args[0],
                                           self.get_current_player(),
@@ -131,6 +132,35 @@ class Game:
         else:
             raise ValueError(f"Unknown action '{action}'")
 
+        self.__rounds += 1
         if self.game_over():
             self.__state = GameState.GAME_OVER
 
+    def play(self):
+        while self.get_state() != GameState.GAME_OVER:
+            print(self.__board)
+            print("Current_player: ", self.get_current_player().get_name())
+
+            if self.__mills_formed:
+                try:
+                    pos_id = int(input("Enter position of opponents piece to remove: "))
+                    self.play_round("remove", pos_id)
+                except ValueError:
+                    print("Invalid number.")
+            elif self.get_state() == GameState.PLACING:
+                try:
+                    pos_id = int(input("Enter position where do you want to place your piece: "))
+                    self.play_round("place", pos_id)
+                except ValueError:
+                    print("Invalid number.")
+            elif self.get_state() == GameState.MOVING or self.get_state() == GameState.JUMPING:
+                try:
+                    from_pos_id = int(input("Enter from which position do you want to move your piece: "))
+                    to_pos_id = int(input("Enter to which position do you want to place your piece: "))
+                    self.play_round("move", from_pos_id, to_pos_id)
+                except ValueError:
+                    print("Invalid number.")
+
+        winner = self.get_winner()
+        print("GAME OVER! Winner: ", winner.get_name(), " ID: ", winner.get_id())
+        return winner
