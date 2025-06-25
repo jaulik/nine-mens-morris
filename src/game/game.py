@@ -56,9 +56,15 @@ class Game:
         (player2.get_pieces_in_hand() == 0 and player2.get_pieces_on_board() <= 2) or\
         self.get_all_possible_moves(player1) == [] or self.get_all_possible_moves(player2) == []
 
+    def get_winner(self) -> Player | None:
+        if self.__state != GameState.GAME_OVER:
+            return None
+        players = [self.get_player1(), self.get_player2()]
+        for player in players:
+            if player.get_pieces_on_board() >= 3 and self.get_all_possible_moves(player) != []:
+                return player
+        return None
 
-    # TODO: Pozor mlýn nesmí být podruhé na stejném místě (nesmíte ho rozbořit a znovu postavit na stejném místě).
-    # TODO: Nesmí se odebírat kameny, které jsou součástí „mlýna“. (Kontrola v Board?)
 
     def play_round(self, action: str, *args) -> None:
         """
@@ -75,8 +81,10 @@ class Game:
                 self.get_current_player().decrement_in_hand()
                 self.get_current_player().increment_on_board()
 
-                if self.__board.is_mill(pos_id, self.get_current_player().get_id()):
+                mill = self.__board.get_mill(pos_id, self.get_current_player().get_id())
+                if mill is not None and not self.get_current_player().has_had_mill(mill):
                     self.__mills_formed = True
+                    self.get_current_player().add_mill(mill)
                 else:
                     self.switch_current_player()
             
@@ -93,8 +101,11 @@ class Game:
             try:
                 from_pos_id, to_pos_id = args
                 self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
-                if self.__board.is_mill(to_pos_id, self.get_current_player().get_id()):
+                
+                mill = self.__board.get_mill(pos_id, self.get_current_player().get_id())
+                if mill is not None and not self.get_current_player().has_had_mill(mill):
                     self.__mills_formed = True
+                    self.get_current_player().add_mill(mill)
                 else:
                     self.switch_current_player()
             

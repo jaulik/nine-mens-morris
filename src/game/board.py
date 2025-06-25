@@ -105,16 +105,23 @@ class Board:
         
         position = self.get_position(position_id)
         occupied_by = position.get_occupied_by()
-        if occupied_by != opponent or occupied_by is None or occupied_by == curr_player:
+        if occupied_by != opponent or occupied_by is None:
             raise InvalidPieceRemovalError(position_id,
                                            curr_player.get_id(),
                                            occupied_by.get_id() if occupied_by is not None else None)
+        
+        # Stones that are part of the mill cannot be removed
+        for mill in MILLS:
+             if position in mill and all(self.get_position(pid).get_occupied_by() == opponent for pid in mill):
+                  raise InvalidPieceRemovalError(position_id,
+                                                 curr_player.get_id(),
+                                                 opponent.get_id())
 
         position.set_occupied_by(None)
 
-    def is_mill(self, position_id: int, player_id: int) -> bool:
+    def get_mill(self, position_id: int, player_id: int) -> list[int] | None:
         for mill in MILLS:
              if position_id in mill and\
                 all(self.get_position(pos_id).get_occupied_by() == player_id for pos_id in mill):
-                       return True
-        return False
+                       return mill
+        return None
