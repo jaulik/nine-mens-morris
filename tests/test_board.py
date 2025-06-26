@@ -37,10 +37,10 @@ class TestBoard(unittest.TestCase):
         self.board.place_piece(self.milan, 7)
         self.board.place_piece(self.milan, 11)
         
-        self.anika.__pieces_in_hand = 0
-        self.anika.__pieces_on_board = 4
-        self.milan.__pieces_in_hand = 0
-        self.milan.__pieces_on_board = 4
+        self.anika._Player__pieces_in_hand = 0
+        self.anika._Player__pieces_on_board = 4
+        self.milan._Player__pieces_in_hand = 0
+        self.milan._Player__pieces_on_board = 4
 
         self.board.move_piece(0, 9, self.anika)
         self.assertIsNone(self.board.get_position(0).get_occupied_by())

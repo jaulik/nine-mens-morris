@@ -3,7 +3,15 @@
 
 ## game
 
-TODO
+This module contains the core game logic. It manages the rules, player actions, board state, and game phases.
+
+Contents:
+
+- `board.py` – Manages the 24-position board, placing/moving/removing pieces, and checking mill formations.
+- `game.py` – Coordinates the flow of the game, turn-taking, and win condition checks.
+- `player.py` – Represents a player with attributes like ID, name, pieces in hand and on board.
+- `position.py` – Represents individual board positions, including their neighbors and occupancy.
+- `exceptions.py` – Defines custom exception classes for invalid moves, illegal actions, or out-of-bounds positions.
 
 ## db
 
