@@ -4,7 +4,8 @@ from src.game.game import Game
 from src.db.manage_db import add_player, start_game, end_game, get_statistics
 
 if __name__ == "__main__":
-    
+    # TODO: if player already exists enter name and id and proceed (SELECT)
+
     print("Here rules and instruction should be printed.")
     print("---------------------------------------------")
     name1 = input("Enter name of player 1: ")
