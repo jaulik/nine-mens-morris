@@ -125,7 +125,6 @@ class Game:
                     self.__state = GameState.JUMPING
                 
                 self.switch_current_player()
-                self.get_opposite_player().decrement_on_board()
 
             except (InvalidPieceRemovalError, PositionOutOfBoundsError) as e:
                 print(e)
@@ -162,5 +161,9 @@ class Game:
                     print("Invalid number.")
 
         winner = self.get_winner()
-        print("GAME OVER! Winner: ", winner.get_name(), " ID: ", winner.get_id())
+        if winner:
+            print("GAME OVER! Winner: ", winner.get_name(), " ID: ", winner.get_id())
+        else:
+            print("GAME OVER! No winner was determined.")
+
         return winner
