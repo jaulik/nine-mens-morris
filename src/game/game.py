@@ -73,6 +73,7 @@ class Game:
         return None
 
 
+    # TODO: refactor - devide into 3 functions
     def play_round(self, action: str, *args) -> None:
         """
         action: "place", "move", "remove"
