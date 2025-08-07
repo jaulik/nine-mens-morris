@@ -12,7 +12,6 @@ class Position:
     def get_neighbors(self) -> tuple[int, ...]:
         return tuple(self.__neighbors)
 
-    # TODO: unmodifiable
     def get_occupied_by(self) -> Player | None:
         return self.__occupied_by
 

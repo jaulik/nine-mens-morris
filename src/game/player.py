@@ -12,10 +12,10 @@ class Player:
         if not isinstance(other, Player):
             return False
         
-        return self.get_id() == other.get_id() and self.get_name() == other.get_name()
+        return self.get_id() == other.get_id()
 
     def __hash__(self):
-        return hash((self.get_id(), self.get_name()))
+        return hash(self.get_id())
 
     def get_name(self) -> str:
         return self.__name
@@ -25,9 +25,15 @@ class Player:
 
     def get_pieces_on_board(self) -> int:
         return self.__pieces_on_board
+    
+    def set_pieces_on_board(self, new_amount: int) -> None:
+        self.__pieces_on_board = new_amount
 
     def get_pieces_in_hand(self) -> int:
         return self.__pieces_in_hand
+    
+    def set_pieces_in_hand(self, new_amount: int) -> None:
+        self.__pieces_in_hand = new_amount
 
     def can_jump(self) -> bool:
         return self.get_pieces_on_board() == 3 and self.get_pieces_in_hand() == 0

@@ -37,10 +37,10 @@ class TestBoard(unittest.TestCase):
         self.board.place_piece(self.milan, 7)
         self.board.place_piece(self.milan, 11)
         
-        self.anika._Player__pieces_in_hand = 0
-        self.anika._Player__pieces_on_board = 4
-        self.milan._Player__pieces_in_hand = 0
-        self.milan._Player__pieces_on_board = 4
+        self.anika.set_pieces_on_board(4)
+        self.anika.set_pieces_in_hand(0)
+        self.milan.set_pieces_on_board(4)
+        self.milan.set_pieces_in_hand(0)
 
         self.board.move_piece(0, 9, self.anika)
         self.assertIsNone(self.board.get_position(0).get_occupied_by())
@@ -61,13 +61,8 @@ class TestBoard(unittest.TestCase):
             self.board.move_piece(11, 6, self.milan)
 
     def test_move_jump(self):
-        for _ in range(9):
-            self.assertFalse(self.milan.can_jump())
-            self.milan.decrement_in_hand()
-            self.milan.increment_on_board()
-        
-        for _ in range(6):
-            self.milan.decrement_on_board()
+        self.milan.set_pieces_on_board(3)
+        self.milan.set_pieces_in_hand(0)
 
         self.board.place_piece(self.milan, 21)
         self.assertTrue(self.milan.can_jump())

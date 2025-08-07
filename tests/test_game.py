@@ -58,18 +58,18 @@ class TestGame(unittest.TestCase):
             self.game.play_round("fly", 0)
 
     def test_jump(self):
-        self.anika._Player__pieces_on_board = 3
-        self.anika._Player__pieces_in_hand = 0
-        self.milan._Player__pieces_on_board = 4
-        self.milan._Player__pieces_in_hand = 0
-        self.game._Game__state = GameState.JUMPING
+        self.anika.set_pieces_on_board(3)
+        self.anika.set_pieces_in_hand(0)
+        self.milan.set_pieces_on_board(4)
+        self.milan.set_pieces_in_hand(0)
+        self.game.set_state(GameState.JUMPING)
         self.assertTrue(self.anika.can_jump())
 
         self.game._Game__board.place_piece(self.anika, 0)
 
         self.game.play_round("move", 0, 5)
-        self.assertIsNone(self.game._Game__board.get_position(0).get_occupied_by())
-        self.assertEqual(self.game._Game__board.get_position(5).get_occupied_by(), self.anika)
+        self.assertIsNone(self.game.get_player_on_position(0))
+        self.assertEqual(self.game.get_player_on_position(5), self.anika)
 
     def test_remove(self):
         self.game.play_round("place", 0)
@@ -78,17 +78,18 @@ class TestGame(unittest.TestCase):
         self.game.play_round("place", 20)
         self.game.play_round("place", 2)
         # anika created mill
-        self.assertEqual(self.game._Game__board.get_position(10).get_occupied_by(), self.milan)
+        self.assertEqual(self.game.get_player_on_position(10), self.milan)
         self.game.play_round("remove", 10)
-        self.assertIsNone(self.game._Game__board.get_position(10).get_occupied_by())
+        self.assertIsNone(self.game.get_player_on_position(10))
 
     def test_game_over_winner(self):
-        self.anika._Player__pieces_in_hand = 0
-        self.anika._Player__pieces_on_board = 5
+        self.anika.set_pieces_on_board(5)
+        self.anika.set_pieces_in_hand(0)
         self.game._Game__board.place_piece(self.anika, 0)
-        self.milan._Player__pieces_in_hand = 0
-        self.milan._Player__pieces_on_board = 2
-        self.game._Game__state = GameState.GAME_OVER
+        self.milan.set_pieces_on_board(2)
+        self.milan.set_pieces_in_hand(0)
+
+        self.game.set_state(GameState.GAME_OVER)
         self.assertTrue(self.game.game_over())
         self.assertEqual(self.game.get_winner(), self.anika)
 

@@ -40,6 +40,7 @@ class TestPlayer(unittest.TestCase):
             self.milan.increment_on_board()
         
         for _ in range(6):
+            self.assertFalse(self.milan.can_jump())
             self.milan.decrement_on_board()
 
         self.assertTrue(self.milan.can_jump())

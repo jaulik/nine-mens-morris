@@ -62,8 +62,7 @@ class Board:
     # TODO: unmodifiable
     def get_board(self) -> dict[int, Position]:
         return self.__positions.copy()
-    
-    # TODO: unmodifiable
+
     def get_position(self, position_id: int) -> Position:
          return self.get_board()[position_id]
 
