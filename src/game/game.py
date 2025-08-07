@@ -19,6 +19,12 @@ class Game:
     def get_state(self) -> GameState:
         return self.__state
     
+    def set_state(self, new_state: GameState) -> None:
+        self.__state = new_state
+    
+    def get_player_on_position(self, pos_id: int) -> Player | None:
+        return self.__board.get_position(pos_id).get_occupied_by()
+    
     def get_player1(self) -> Player:
         return self.__player1
     

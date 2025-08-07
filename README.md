@@ -46,3 +46,11 @@ Contents of folder:
  - `oracle/insert_data.sql`		- Inserts sample data into tables.
  - `oracle/triggers_update.sql`		- Creates two triggers, procedure, cursor and recalculates statistics table.
  - `oracle/select.sql`			- Contains several select statements.
+
+# Tests and coverage
+
+## Run tests
+`coverage run -m unittest discover tests/`
+
+## Get test coverage
+`coverage report -m`
