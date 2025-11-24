@@ -73,7 +73,6 @@ class Game:
         return None
 
 
-    # TODO: refactor - devide into 3 functions
     def play_round(self, action: str, *args) -> None:
         """
         action: "place", "move", "remove"
@@ -82,65 +81,79 @@ class Game:
           - move:    from_id, to_id
           - remove:  position_id
         """
-        if action == "place" and self.get_state() == GameState.PLACING:
-            try:
-                pos_id = args[0]
-                self.__board.place_piece(self.get_current_player(), pos_id)
-                self.get_current_player().decrement_in_hand()
-                self.get_current_player().increment_on_board()
-
-                mill = self.__board.get_mill(pos_id, self.get_current_player())
-                if mill is not None and not self.get_current_player().has_had_mill(mill):
-                    self.__mills_formed = True
-                    self.get_current_player().add_mill(mill)
-                else:
-                    self.switch_current_player()
-            
-            except (PositionOutOfBoundsError, PositionAlreadyOccupiedError) as e:
-                print(e)
-            finally:
-                if self.get_player1().get_pieces_in_hand() == 0 and\
-                    self.get_player2().get_pieces_in_hand() == 0:
-                    self.__state = GameState.MOVING
-
-        elif action == "move" and\
-            (self.get_state() == GameState.MOVING or self.get_state() == GameState.JUMPING)\
-            and not self.__mills_formed:
-            try:
-                from_pos_id, to_pos_id = args
-                self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
-                
-                mill = self.__board.get_mill(to_pos_id, self.get_current_player())
-                if mill is not None and not self.get_current_player().has_had_mill(mill):
-                    self.__mills_formed = True
-                    self.get_current_player().add_mill(mill)
-                else:
-                    self.switch_current_player()
-            
-            except (PositionOutOfBoundsError, PositionAlreadyOccupiedError, InvalidMoveError) as e:
-                print(e)
-
+        if action == "place":
+            self._handle_place(args[0])
+        elif action == "move":
+            self._handle_move(args[0], args[1])
         elif action == "remove":
-            try:
-                self.__board.remove_piece(args[0],
-                                          self.get_current_player(),
-                                          self.get_opposite_player())
-
-                self.__mills_formed = False
-                self.get_opposite_player().decrement_on_board()
-                if self.get_opposite_player().can_jump():
-                    self.__state = GameState.JUMPING
-                
-                self.switch_current_player()
-
-            except (InvalidPieceRemovalError, PositionOutOfBoundsError) as e:
-                print(e)
+            self._handle_remove(args[0])
         else:
             raise ValueError(f"Unknown action '{action}'")
 
         self.__rounds += 1
         if self.game_over():
             self.__state = GameState.GAME_OVER
+
+
+    def _handle_place(self, pos_id: int) -> None:
+        if self.get_state() != GameState.PLACING:
+            return
+
+        try:
+            self.__board.place_piece(self.get_current_player(), pos_id)
+            self.get_current_player().decrement_in_hand()
+            self.get_current_player().increment_on_board()
+
+            mill = self.__board.get_mill(pos_id, self.get_current_player())
+            if mill is not None and not self.get_current_player().has_had_mill(mill):
+                self.__mills_formed = True
+                self.get_current_player().add_mill(mill)
+            else:
+                self.switch_current_player()
+
+        except (PositionOutOfBoundsError, PositionAlreadyOccupiedError) as e:
+            print(e)
+        finally:
+            if (self.get_player1().get_pieces_in_hand() == 0 and
+                    self.get_player2().get_pieces_in_hand() == 0):
+                self.__state = GameState.MOVING
+
+
+    def _handle_move(self, from_pos_id: int, to_pos_id: int) -> None:
+        valid_states = {GameState.MOVING, GameState.JUMPING}
+        if self.get_state() not in valid_states or self.__mills_formed:
+            return
+
+        try:
+            self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
+
+            mill = self.__board.get_mill(to_pos_id, self.get_current_player())
+            if mill is not None and not self.get_current_player().has_had_mill(mill):
+                self.__mills_formed = True
+                self.get_current_player().add_mill(mill)
+            else:
+                self.switch_current_player()
+
+        except (PositionOutOfBoundsError, PositionAlreadyOccupiedError, InvalidMoveError) as e:
+            print(e)
+
+
+    def _handle_remove(self, pos_id: int) -> None:
+        try:
+            self.__board.remove_piece(pos_id,
+                                      self.get_current_player(), self.get_opposite_player())
+
+            self.__mills_formed = False
+            self.get_opposite_player().decrement_on_board()
+
+            if self.get_opposite_player().can_jump():
+                self.__state = GameState.JUMPING
+
+            self.switch_current_player()
+
+        except (InvalidPieceRemovalError, PositionOutOfBoundsError) as e:
+            print(e)
+
 
     def play(self):
         while self.get_state() != GameState.GAME_OVER:
