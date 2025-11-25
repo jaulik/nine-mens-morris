@@ -3,7 +3,7 @@ PRAGMA foreign_keys = ON;
 -- players
 CREATE TABLE IF NOT EXISTS players (
   player_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   registered_at DATETIME DEFAULT (CURRENT_TIMESTAMP));
 
 -- games
