@@ -1,3 +1,4 @@
+import sqlite3
 import unittest
 import os
 import sys
@@ -11,7 +12,7 @@ from db import sqlite_setup, clean_db, manage_db
 
 class TestDbFunctions(unittest.TestCase):
     @classmethod
-    def setUpClass(cls) -> None:
+    def setUp(cls) -> None:
         clean_db.drop_tables()
         sqlite_setup.create_tables()
 
@@ -55,9 +56,17 @@ class TestDbFunctions(unittest.TestCase):
         self.assertEqual(angela_stats['winrate'], None)
 
     def test_duplicate_player_names(self) -> None:
-        id1 = manage_db.add_player("Eva")
-        id2 = manage_db.add_player("Eva")
-        self.assertNotEqual(id1, id2)
+        manage_db.add_player("Eva")
+        with self.assertRaises(sqlite3.IntegrityError):
+            manage_db.add_player("Eva")
+
+    def test_player_lifecycle(self) -> None:
+        player_name = "Eva"
+        original_id = manage_db.add_player(player_name)
+        found_id = manage_db.get_player_id_by_name(player_name)
+
+        self.assertIsNotNone(found_id, f"Player {player_name} should be in DB")
+        self.assertEqual(original_id, found_id, "The found ID must be the same")
 
     def test_invalid_game_start(self) -> None:
         with self.assertRaises(Exception) as e:
