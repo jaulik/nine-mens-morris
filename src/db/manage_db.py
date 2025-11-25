@@ -18,6 +18,20 @@ INSERT INTO players (name) VALUES (?)
     conn.close()
     return player_id
 
+# find an ID based on the name.
+def get_player_id_by_name(name: str) -> int | None:
+    conn = sqlite_setup.get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT player_id FROM players WHERE name = ?
+    """, (name,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if row is not None:
+        return row[0]
+    return None
+
 
 # Start a new game and return its ID.
 def start_game(player1_id: int, player2_id: int) -> int:
