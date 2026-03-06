@@ -197,10 +197,3 @@ class Game:
         This bypasses normal game rules and is only for test setup.
         """
         self.__board.place_piece(player, pos_id)
-
-    def _test_get_board(self) -> 'Board':
-        """
-        Internal test helper: Returns the board for testing.
-        """
-        return self.__board
-
