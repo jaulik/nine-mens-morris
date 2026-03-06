@@ -3,7 +3,7 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..', '..', 'src')))
-from db import sqlite_setup
+from . import sqlite_setup
 
 
 # Insert a new player into the players table and return their ID.
