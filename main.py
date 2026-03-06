@@ -64,6 +64,6 @@ Game Rules & Instructions:
 
     game_id = start_game(player1.get_id(), player2.get_id())
     game = Game(player1, player2)
-    
+
     winner = game.play()
     end_game(winner.get_id() if winner else None, game.get_rounds(), game_id)

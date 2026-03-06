@@ -65,7 +65,7 @@ class TestGame(unittest.TestCase):
         self.game.set_state(GameState.JUMPING)
         self.assertTrue(self.anika.can_jump())
 
-        self.game._Game__board.place_piece(self.anika, 0)
+        self.game._test_place_piece_directly(self.anika, 0)
 
         self.game.play_round("move", 0, 5)
         self.assertIsNone(self.game.get_player_on_position(0))
@@ -85,7 +85,7 @@ class TestGame(unittest.TestCase):
     def test_game_over_winner(self):
         self.anika.set_pieces_on_board(5)
         self.anika.set_pieces_in_hand(0)
-        self.game._Game__board.place_piece(self.anika, 0)
+        self.game._test_place_piece_directly(self.anika, 0)
         self.milan.set_pieces_on_board(2)
         self.milan.set_pieces_in_hand(0)
 

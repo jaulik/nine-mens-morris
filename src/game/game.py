@@ -187,3 +187,20 @@ class Game:
             print("GAME OVER! No winner was determined.")
 
         return winner
+
+    # ============ TEST HELPER METHODS ============
+    # These methods are ONLY for testing purposes
+
+    def _test_place_piece_directly(self, player: Player, pos_id: int) -> None:
+        """
+        Internal test helper: Places a piece directly on the board.
+        This bypasses normal game rules and is only for test setup.
+        """
+        self.__board.place_piece(player, pos_id)
+
+    def _test_get_board(self) -> 'Board':
+        """
+        Internal test helper: Returns the board for testing.
+        """
+        return self.__board
+
