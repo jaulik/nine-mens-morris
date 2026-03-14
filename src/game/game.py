@@ -21,6 +21,12 @@ class Game:
     
     def set_state(self, new_state: GameState) -> None:
         self.__state = new_state
+
+    def get_board(self) -> Board:
+        return self.__board
+
+    def get_mills_formed(self) -> bool:
+        return self.__mills_formed
     
     def get_player_on_position(self, pos_id: int) -> Player | None:
         return self.__board.get_position(pos_id).get_occupied_by()
@@ -153,37 +159,3 @@ class Game:
 
         except (InvalidPieceRemovalError, PositionOutOfBoundsError) as e:
             print(e)
-
-
-    def play(self):
-        while self.get_state() != GameState.GAME_OVER:
-            print(self.__board)
-            print("Current_player: ", self.get_current_player().get_name())
-
-            if self.__mills_formed:
-                try:
-                    pos_id = int(input("Enter position of opponents piece to remove: "))
-                    self.play_round("remove", pos_id)
-                except ValueError:
-                    print("Invalid number.")
-            elif self.get_state() == GameState.PLACING:
-                try:
-                    pos_id = int(input("Enter position where do you want to place your piece: "))
-                    self.play_round("place", pos_id)
-                except ValueError:
-                    print("Invalid number.")
-            elif self.get_state() == GameState.MOVING or self.get_state() == GameState.JUMPING:
-                try:
-                    from_pos_id = int(input("Enter from which position do you want to move your piece: "))
-                    to_pos_id = int(input("Enter to which position do you want to place your piece: "))
-                    self.play_round("move", from_pos_id, to_pos_id)
-                except ValueError:
-                    print("Invalid number.")
-
-        winner = self.get_winner()
-        if winner:
-            print("GAME OVER! Winner: ", winner.get_name(), " ID: ", winner.get_id())
-        else:
-            print("GAME OVER! No winner was determined.")
-
-        return winner

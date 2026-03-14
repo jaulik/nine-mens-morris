@@ -1,5 +1,6 @@
 from src.game.player import Player
 from src.game.game import Game
+from src.cli.game_runner import GameRunner
 
 from src.db.manage_db import add_player, start_game, end_game, get_statistics, get_player_id_by_name
 
@@ -64,6 +65,7 @@ Game Rules & Instructions:
 
     game_id = start_game(player1.get_id(), player2.get_id())
     game = Game(player1, player2)
+    game_runner = GameRunner(game)
 
-    winner = game.play()
+    winner = game_runner.run()
     end_game(winner.get_id() if winner else None, game.get_rounds(), game_id)
