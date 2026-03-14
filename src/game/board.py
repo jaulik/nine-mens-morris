@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from src.game.position import Position
 from src.game.player import Player
 from src.game.exceptions import *
@@ -59,18 +61,32 @@ class Board:
             23: Position(23, [14, 22]),
         }
 
-    # TODO: unmodifiable
-    def get_board(self) -> dict[int, Position]:
-        return self.__positions.copy()
+    def _position(self, position_id: int) -> Position:
+        if not (0 <= position_id <= 23):
+            raise PositionOutOfBoundsError(position_id)
+        return self.__positions[position_id]
 
-    def get_position(self, position_id: int) -> Position:
-         return self.get_board()[position_id]
+    def occupied_by(self, position_id: int) -> Player | None:
+        if not (0 <= position_id <= 23):
+            raise PositionOutOfBoundsError(position_id)
+        return self.__positions[position_id].get_occupied_by()
+
+    def neighbors_of(self, position_id: int) -> tuple[int, ...]:
+        if not (0 <= position_id <= 23):
+            raise PositionOutOfBoundsError(position_id)
+        return self.__positions[position_id].get_neighbors()
+
+    def positions_occupied_by(self, player: Player) -> tuple[int, ...]:
+        return tuple(
+            pid for pid, pos in self.__positions.items()
+            if pos.get_occupied_by() == player
+        )
 
     def place_piece(self, player: Player, position_id: int) -> None:
         if not (0 <= position_id <= 23):
             raise PositionOutOfBoundsError(position_id)
         
-        position = self.get_position(position_id)
+        position = self._position(position_id)
         if position.get_occupied_by() is not None:
             raise PositionAlreadyOccupiedError(position)
 
@@ -82,8 +98,8 @@ class Board:
             raise PositionOutOfBoundsError(from_pos_id
                                            if from_pos_id < 0 or from_pos_id > 23 else to_pos_id)
         
-        from_pos = self.get_position(from_pos_id)
-        to_pos = self.get_position(to_pos_id)
+        from_pos = self._position(from_pos_id)
+        to_pos = self._position(to_pos_id)
 
         from_pos_player = from_pos.get_occupied_by()
         if from_pos_player != curr_player:
@@ -102,7 +118,7 @@ class Board:
         if not (0 <= position_id <= 23):
             raise PositionOutOfBoundsError(position_id)
         
-        position = self.get_position(position_id)
+        position = self._position(position_id)
         occupied_by = position.get_occupied_by()
         if occupied_by != opponent or occupied_by is None:
             raise InvalidPieceRemovalError(position_id,
@@ -111,7 +127,7 @@ class Board:
         
         # Stones that are part of the mill cannot be removed
         for mill in MILLS:
-             if position_id in mill and all(self.get_position(pid).get_occupied_by() == opponent for pid in mill):
+             if position_id in mill and all(self._position(pid).get_occupied_by() == opponent for pid in mill):
                   raise InvalidPieceRemovalError(position_id,
                                                  curr_player.get_id(),
                                                  opponent.get_id())
@@ -121,14 +137,14 @@ class Board:
     def get_mill(self, position_id: int, player: Player) -> list[int] | None:
         for mill in MILLS:
              if position_id in mill and\
-                all(self.get_position(pos_id).get_occupied_by() == player for pos_id in mill):
+                all(self._position(pos_id).get_occupied_by() == player for pos_id in mill):
                        return mill
         return None
 
 
     def __str__(self):
         def f(i):
-            pos = self.get_position(i)
+            pos = self._position(i)
             occ = pos.get_occupied_by()
             val = occ.get_id() if occ else "X"
             return f"{i}:{val}"

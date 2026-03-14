@@ -9,7 +9,7 @@ class GameRunner:
 
     def run(self):
         while self.game.get_state() != GameState.GAME_OVER:
-            print(self.game.get_board())
+            print(self.game.render_board())
             print("Current_player: ", self.game.get_current_player().get_name())
 
             try:

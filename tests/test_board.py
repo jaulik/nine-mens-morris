@@ -18,7 +18,7 @@ class TestBoard(unittest.TestCase):
 
     def test_place_piece(self):
         self.board.place_piece(self.anika, 0)
-        self.assertEqual(self.board.get_position(0).get_occupied_by(), self.anika)
+        self.assertEqual(self.board._position(0).get_occupied_by(), self.anika)
 
         with self.assertRaises(src.game.exceptions.PositionAlreadyOccupiedError):
             self.board.place_piece(self.milan, 0)
@@ -43,8 +43,8 @@ class TestBoard(unittest.TestCase):
         self.milan.set_pieces_in_hand(0)
 
         self.board.move_piece(0, 9, self.anika)
-        self.assertIsNone(self.board.get_position(0).get_occupied_by())
-        self.assertEqual(self.board.get_position(9).get_occupied_by(), self.anika)
+        self.assertIsNone(self.board._position(0).get_occupied_by())
+        self.assertEqual(self.board._position(9).get_occupied_by(), self.anika)
 
         # Attempt move from wrong player
         with self.assertRaises(src.game.exceptions.InvalidMoveError):
@@ -68,8 +68,8 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(self.milan.can_jump())
 
         self.board.move_piece(21, 12, self.milan)
-        self.assertEqual(self.board.get_position(12).get_occupied_by(), self.milan)
-        self.assertIsNone(self.board.get_position(21).get_occupied_by())
+        self.assertEqual(self.board._position(12).get_occupied_by(), self.milan)
+        self.assertIsNone(self.board._position(21).get_occupied_by())
 
     def test_remove_piece(self):
         with self.assertRaises(src.game.exceptions.PositionOutOfBoundsError):
@@ -84,7 +84,7 @@ class TestBoard(unittest.TestCase):
             self.board.remove_piece(23, self.milan, self.anika)
 
         self.board.remove_piece(10, self.anika, self.milan)
-        self.assertIsNone(self.board.get_position(10).get_occupied_by())
+        self.assertIsNone(self.board._position(10).get_occupied_by())
 
 
     def test_remove_piece_in_mill(self):

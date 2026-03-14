@@ -7,7 +7,7 @@ class Game:
     def __init__(self, player1: Player, player2: Player, board: Board | None = None):
         self.__player1 = player1
         self.__player2 = player2
-        self.__board = board if board else Board()
+        self.__board = board if board is not None else Board()
         self.__current_player = player1
         self.__state = GameState.PLACING
         self.__mills_formed = False     # flag that the last move caused the creation of a mill
@@ -22,14 +22,11 @@ class Game:
     def set_state(self, new_state: GameState) -> None:
         self.__state = new_state
 
-    def get_board(self) -> Board:
-        return self.__board
-
     def get_mills_formed(self) -> bool:
         return self.__mills_formed
     
     def get_player_on_position(self, pos_id: int) -> Player | None:
-        return self.__board.get_position(pos_id).get_occupied_by()
+        return self.__board.occupied_by(pos_id)
     
     def get_player1(self) -> Player:
         return self.__player1
@@ -44,23 +41,23 @@ class Game:
         return self.get_player2() if self.get_current_player() == self.get_player1()\
             else self.get_player1()
 
+    def render_board(self) -> str:
+        return str(self.__board)
+
     def switch_current_player(self) -> None:
         if self.get_current_player() == self.get_player1():
             self.__current_player = self.get_player2()
         else:
             self.__current_player = self.get_player1()
 
-
     def get_all_possible_moves(self, player: Player) -> list[int]:
-        pieces_id = []
-        for _, pos in self.__board.get_board().items():
-            if pos.get_occupied_by() == player:
-                for neighbor_id in pos.get_neighbors():
-                    if self.__board.get_position(neighbor_id).get_occupied_by() is None:
-                        pieces_id.append(neighbor_id)
+        moves: list[int] = []
 
-        return pieces_id
-
+        for from_pos_id in self.__board.positions_occupied_by(player):
+            for to_pos_id in self.__board.neighbors_of(from_pos_id):
+                if self.__board.occupied_by(to_pos_id) is None:
+                    moves.append(to_pos_id)
+        return moves
 
     def game_over(self) -> bool:
         if self.get_state() == GameState.PLACING:
