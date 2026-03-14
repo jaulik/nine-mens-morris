@@ -4,10 +4,10 @@ from src.game.game_state import GameState
 from src.game.exceptions import *
 
 class Game:
-    def __init__(self, player1: Player, player2: Player):
+    def __init__(self, player1: Player, player2: Player, board: Board | None = None):
         self.__player1 = player1
         self.__player2 = player2
-        self.__board = Board()
+        self.__board = board if board else Board()
         self.__current_player = player1
         self.__state = GameState.PLACING
         self.__mills_formed = False     # flag that the last move caused the creation of a mill
@@ -187,13 +187,3 @@ class Game:
             print("GAME OVER! No winner was determined.")
 
         return winner
-
-    # ============ TEST HELPER METHODS ============
-    # These methods are ONLY for testing purposes
-
-    def _test_place_piece_directly(self, player: Player, pos_id: int) -> None:
-        """
-        Internal test helper: Places a piece directly on the board.
-        This bypasses normal game rules and is only for test setup.
-        """
-        self.__board.place_piece(player, pos_id)

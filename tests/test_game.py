@@ -4,6 +4,8 @@ import sys
 import io
 import contextlib
 
+from src.game.board import Board
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..', 'src')))
 
@@ -62,14 +64,16 @@ class TestGame(unittest.TestCase):
         self.anika.set_pieces_in_hand(0)
         self.milan.set_pieces_on_board(4)
         self.milan.set_pieces_in_hand(0)
-        self.game.set_state(GameState.JUMPING)
         self.assertTrue(self.anika.can_jump())
 
-        self.game._test_place_piece_directly(self.anika, 0)
+        board = Board()
+        board.place_piece(self.anika, 0)
+        game = Game(self.anika, self.milan, board)
+        game.set_state(GameState.JUMPING)
 
-        self.game.play_round("move", 0, 5)
-        self.assertIsNone(self.game.get_player_on_position(0))
-        self.assertEqual(self.game.get_player_on_position(5), self.anika)
+        game.play_round("move", 0, 5)
+        self.assertIsNone(game.get_player_on_position(0))
+        self.assertEqual(game.get_player_on_position(5), self.anika)
 
     def test_remove(self):
         self.game.play_round("place", 0)
@@ -85,13 +89,17 @@ class TestGame(unittest.TestCase):
     def test_game_over_winner(self):
         self.anika.set_pieces_on_board(5)
         self.anika.set_pieces_in_hand(0)
-        self.game._test_place_piece_directly(self.anika, 0)
+
+        board = Board()
+        board.place_piece(self.anika, 0)
+        game = Game(self.anika, self.milan, board)
+
         self.milan.set_pieces_on_board(2)
         self.milan.set_pieces_in_hand(0)
 
-        self.game.set_state(GameState.GAME_OVER)
-        self.assertTrue(self.game.game_over())
-        self.assertEqual(self.game.get_winner(), self.anika)
+        game.set_state(GameState.GAME_OVER)
+        self.assertTrue(game.game_over())
+        self.assertEqual(game.get_winner(), self.anika)
 
     # TODO: test play + play_round
 
