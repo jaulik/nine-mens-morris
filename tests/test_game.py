@@ -5,6 +5,7 @@ import io
 import contextlib
 
 from src.game.board import Board
+from src.game.exceptions import PositionAlreadyOccupiedError
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..', 'src')))
@@ -44,9 +45,8 @@ class TestGame(unittest.TestCase):
 
     def test_place_on_occupied_position(self):
         self.game.play_round("place", 0)
-        # redirect error msg to "black hole"
-        f = io.StringIO()
-        with contextlib.redirect_stdout(f):
+
+        with self.assertRaises(PositionAlreadyOccupiedError):
             self.game.play_round("place", 0)
         self.assertEqual(self.game.get_current_player(), self.milan)
 
