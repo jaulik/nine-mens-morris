@@ -1,13 +1,8 @@
 import sqlite3
 import unittest
-import os
-import sys
 import time
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             '..', 'src')))
-
-from db import sqlite_setup, clean_db, manage_db
+from nine_mens_morris.db import sqlite_setup, clean_db, manage_db
 
 
 class TestDbFunctions(unittest.TestCase):

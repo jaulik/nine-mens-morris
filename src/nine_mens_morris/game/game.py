@@ -1,7 +1,7 @@
-from src.game.player import Player
-from src.game.board import Board
-from src.game.game_state import GameState
-from src.game.exceptions import *
+from nine_mens_morris.game.player import Player
+from nine_mens_morris.game.board import Board
+from nine_mens_morris.game.game_state import GameState
+
 
 class Game:
     def __init__(self, player1: Player, player2: Player, board: Board | None = None):

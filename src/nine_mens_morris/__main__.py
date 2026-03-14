@@ -1,5 +1,5 @@
-from nine_mens_morris.game import Player
-from nine_mens_morris.game import Game
+from nine_mens_morris.game.player import Player
+from nine_mens_morris.game.game import Game
 from nine_mens_morris.cli.game_runner import GameRunner
 
 from nine_mens_morris.db.manage_db import add_player, start_game, end_game, get_player_id_by_name

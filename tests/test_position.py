@@ -1,12 +1,7 @@
 import unittest
-import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             '..', 'src')))
-
-from game.position import Position
-from game.player import Player
+from nine_mens_morris.game.position import Position
+from nine_mens_morris.game.player import Player
 
 
 class TestPosition(unittest.TestCase):

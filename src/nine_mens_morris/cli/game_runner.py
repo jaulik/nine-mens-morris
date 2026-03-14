@@ -1,7 +1,6 @@
-from src.game.exceptions import PositionOutOfBoundsError, PositionAlreadyOccupiedError, InvalidMoveError, \
-    InvalidPieceRemovalError
-from src.game.game import Game
-from src.game.game_state import GameState
+from nine_mens_morris.game.exceptions import *
+from nine_mens_morris.game.game import Game
+from nine_mens_morris.game.game_state import GameState
 
 class GameRunner:
     def __init__(self, game: Game):
