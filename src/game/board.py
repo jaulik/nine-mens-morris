@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from src.game.position import Position
 from src.game.player import Player
 from src.game.exceptions import *
@@ -34,32 +32,31 @@ class Board:
         self.__positions = self.initialize_positions()
 
     def initialize_positions(self) -> dict[int, Position]:
-                return {
-            0: Position(0, [1, 9]),
-            1: Position(1, [0, 2, 4]),
-            2: Position(2, [1, 14]),
-            3: Position(3, [4, 10]),
-            4: Position(4, [1, 3, 5, 7]),
-            5: Position(5, [4, 13]),
-            6: Position(6, [7, 11]),
-            7: Position(7, [4, 6, 8]),
-            8: Position(8, [7, 12]),
-            9: Position(9, [0, 10, 21]),
-            10: Position(10, [3, 9, 11, 18]),
-            11: Position(11, [6, 10, 15]),
-            12: Position(12, [8, 13, 17]),
-            13: Position(13, [5, 12, 14, 20]),
-            14: Position(14, [2, 13, 23]),
-            15: Position(15, [11, 16]),
-            16: Position(16, [15, 17, 19]),
-            17: Position(17, [12, 16]),
-            18: Position(18, [10, 19]),
-            19: Position(19, [16, 18, 20, 22]),
-            20: Position(20, [13, 19]),
-            21: Position(21, [9, 22]),
-            22: Position(22, [19, 21, 23]),
-            23: Position(23, [14, 22]),
-        }
+                return {0: Position(0, [1, 9]),
+                        1: Position(1, [0, 2, 4]),
+                        2: Position(2, [1, 14]),
+                        3: Position(3, [4, 10]),
+                        4: Position(4, [1, 3, 5, 7]),
+                        5: Position(5, [4, 13]),
+                        6: Position(6, [7, 11]),
+                        7: Position(7, [4, 6, 8]),
+                        8: Position(8, [7, 12]),
+                        9: Position(9, [0, 10, 21]),
+                        10: Position(10, [3, 9, 11, 18]),
+                        11: Position(11, [6, 10, 15]),
+                        12: Position(12, [8, 13, 17]),
+                        13: Position(13, [5, 12, 14, 20]),
+                        14: Position(14, [2, 13, 23]),
+                        15: Position(15, [11, 16]),
+                        16: Position(16, [15, 17, 19]),
+                        17: Position(17, [12, 16]),
+                        18: Position(18, [10, 19]),
+                        19: Position(19, [16, 18, 20, 22]),
+                        20: Position(20, [13, 19]),
+                        21: Position(21, [9, 22]),
+                        22: Position(22, [19, 21, 23]),
+                        23: Position(23, [14, 22])
+                        }
 
     def _position(self, position_id: int) -> Position:
         if not (0 <= position_id <= 23):
@@ -67,14 +64,10 @@ class Board:
         return self.__positions[position_id]
 
     def occupied_by(self, position_id: int) -> Player | None:
-        if not (0 <= position_id <= 23):
-            raise PositionOutOfBoundsError(position_id)
-        return self.__positions[position_id].get_occupied_by()
+        return self._position(position_id).get_occupied_by()
 
     def neighbors_of(self, position_id: int) -> tuple[int, ...]:
-        if not (0 <= position_id <= 23):
-            raise PositionOutOfBoundsError(position_id)
-        return self.__positions[position_id].get_neighbors()
+        return self._position(position_id).get_neighbors()
 
     def positions_occupied_by(self, player: Player) -> tuple[int, ...]:
         return tuple(
