@@ -9,3 +9,4 @@ __pycache__/
 .coverage
 .coverage.*
 .pytest_cache/
+.venv
