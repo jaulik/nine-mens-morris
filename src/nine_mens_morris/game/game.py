@@ -18,27 +18,27 @@ class Game:
 
     def get_state(self) -> GameState:
         return self.__state
-    
+
     def set_state(self, new_state: GameState) -> None:
         self.__state = new_state
 
     def get_mills_formed(self) -> bool:
         return self.__mills_formed
-    
+
     def get_player_on_position(self, pos_id: int) -> Player | None:
         return self.__board.occupied_by(pos_id)
-    
+
     def get_player1(self) -> Player:
         return self.__player1
-    
+
     def get_player2(self) -> Player:
         return self.__player2
-    
+
     def get_current_player(self) -> Player:
         return self.__current_player
-    
+
     def get_opposite_player(self) -> Player:
-        return self.get_player2() if self.get_current_player() == self.get_player1()\
+        return self.get_player2() if self.get_current_player() == self.get_player1() \
             else self.get_player1()
 
     def render_board(self) -> str:
@@ -60,10 +60,13 @@ class Game:
         return moves
 
     def game_over(self) -> bool:
-        if self.get_state() == GameState.PLACING:
-            return False
+        if self.get_state() == GameState.GAME_OVER:
+            return True
 
         opponent = self.get_opposite_player()
+        if self.get_state() == GameState.PLACING:
+            return (opponent.get_pieces_on_board() + opponent.get_pieces_in_hand()) <= 2
+
         return opponent.get_pieces_on_board() <= 2 or self.get_all_possible_moves(opponent) == []
 
     def get_winner(self) -> Player | None:
@@ -94,7 +97,7 @@ class Game:
             raise ValueError(f"Unknown action '{action}'")
 
         self.__rounds += 1
-        if self.game_over():
+        if self.__state != GameState.GAME_OVER and self.game_over():
             self.__state = GameState.GAME_OVER
 
 
@@ -140,7 +143,11 @@ class Game:
         self.__mills_formed = False
         self.get_opposite_player().decrement_on_board()
 
-        if self.get_opposite_player().can_jump():
-            self.__state = GameState.JUMPING
+        if self.game_over():
+            self.__state = GameState.GAME_OVER
+            return
 
         self.switch_current_player()
+
+        if self.get_state() != GameState.PLACING:
+            self.__state = GameState.JUMPING if self.get_current_player().can_jump() else GameState.MOVING
