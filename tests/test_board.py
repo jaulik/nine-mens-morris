@@ -2,7 +2,12 @@ import unittest
 
 from nine_mens_morris.game.board import Board
 from nine_mens_morris.game.player import Player
-from nine_mens_morris.game.exceptions import *
+from nine_mens_morris.game.exceptions import (
+    PositionAlreadyOccupiedError,
+    PositionOutOfBoundsError,
+    InvalidMoveError,
+    InvalidPieceRemovalError,
+)
 
 
 class TestBoard(unittest.TestCase):
