@@ -1,6 +1,5 @@
-from src.game.position import Position
-from src.game.player import Player
-from src.game.exceptions import *
+from nine_mens_morris.game.player import Player
+from nine_mens_morris.game.exceptions import *
 
 # Positions 0–23 correspond to points on the game board.
 # Each position knows its neighbors - that is, where a piece can be moved.

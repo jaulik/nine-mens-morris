@@ -1,13 +1,13 @@
 import unittest
-import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             '..', 'src')))
-
-import src
-from game.board import Board
-from game.player import Player
+from nine_mens_morris.game.board import Board
+from nine_mens_morris.game.player import Player
+from nine_mens_morris.game.exceptions import (
+    PositionAlreadyOccupiedError,
+    PositionOutOfBoundsError,
+    InvalidMoveError,
+    InvalidPieceRemovalError,
+)
 
 
 class TestBoard(unittest.TestCase):
@@ -20,10 +20,10 @@ class TestBoard(unittest.TestCase):
         self.board.place_piece(self.anika, 0)
         self.assertEqual(self.board.occupied_by(0), self.anika)
 
-        with self.assertRaises(src.game.exceptions.PositionAlreadyOccupiedError):
+        with self.assertRaises(PositionAlreadyOccupiedError):
             self.board.place_piece(self.milan, 0)
         
-        with self.assertRaises(src.game.exceptions.PositionOutOfBoundsError):
+        with self.assertRaises(PositionOutOfBoundsError):
             self.board.place_piece(self.milan, 24)
 
     def test_move_piece(self):
@@ -47,17 +47,17 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.occupied_by(9), self.anika)
 
         # Attempt move from wrong player
-        with self.assertRaises(src.game.exceptions.InvalidMoveError):
+        with self.assertRaises(InvalidMoveError):
             self.board.move_piece(1, 0, self.anika)
 
         # Attempt move to non-neighbor
-        with self.assertRaises(src.game.exceptions.InvalidMoveError):
+        with self.assertRaises(InvalidMoveError):
             self.board.move_piece(2, 12, self.anika)
         
-        with self.assertRaises(src.game.exceptions.PositionOutOfBoundsError):
+        with self.assertRaises(PositionOutOfBoundsError):
             self.board.move_piece(9, 24, self.anika)
 
-        with self.assertRaises(src.game.exceptions.PositionAlreadyOccupiedError):
+        with self.assertRaises(PositionAlreadyOccupiedError):
             self.board.move_piece(11, 6, self.milan)
 
     def test_move_jump(self):
@@ -72,15 +72,15 @@ class TestBoard(unittest.TestCase):
         self.assertIsNone(self.board.occupied_by(21))
 
     def test_remove_piece(self):
-        with self.assertRaises(src.game.exceptions.PositionOutOfBoundsError):
+        with self.assertRaises(PositionOutOfBoundsError):
             self.board.remove_piece(24, self.milan, self.anika)
 
         self.board.place_piece(self.milan, 10)
         # Invalid removal – not opponent
-        with self.assertRaises(src.game.exceptions.InvalidPieceRemovalError):
+        with self.assertRaises(InvalidPieceRemovalError):
             self.board.remove_piece(10, self.milan, self.anika)
         # Invalid removal - empty position
-        with self.assertRaises(src.game.exceptions.InvalidPieceRemovalError):
+        with self.assertRaises(InvalidPieceRemovalError):
             self.board.remove_piece(23, self.milan, self.anika)
 
         self.board.remove_piece(10, self.anika, self.milan)
@@ -91,7 +91,7 @@ class TestBoard(unittest.TestCase):
         self.board.place_piece(self.anika, 0)
         self.board.place_piece(self.anika, 1)
         self.board.place_piece(self.anika, 2)
-        with self.assertRaises(src.game.exceptions.InvalidPieceRemovalError):
+        with self.assertRaises(InvalidPieceRemovalError):
             self.board.remove_piece(0, self.milan, self.anika)
 
     def test_get_mill(self):

@@ -1,18 +1,11 @@
 import unittest
-import os
-import sys
-import io
-import contextlib
 
-from src.game.board import Board
-from src.game.exceptions import PositionAlreadyOccupiedError
+from nine_mens_morris.game.board import Board
+from nine_mens_morris.game.exceptions import PositionAlreadyOccupiedError
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             '..', 'src')))
-
-from src.game.game_state import GameState
-from game.game import Game
-from game.player import Player
+from nine_mens_morris.game.game_state import GameState
+from nine_mens_morris.game.game import Game
+from nine_mens_morris.game.player import Player
 
 
 class TestGame(unittest.TestCase):

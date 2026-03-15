@@ -1,4 +1,4 @@
-from src.game.position import Position
+from nine_mens_morris.game.position import Position
 
 class PositionAlreadyOccupiedError(Exception):
     def __init__(self, position: Position):

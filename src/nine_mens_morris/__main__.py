@@ -1,8 +1,8 @@
-from src.game.player import Player
-from src.game.game import Game
-from src.cli.game_runner import GameRunner
+from nine_mens_morris.game.player import Player
+from nine_mens_morris.game.game import Game
+from nine_mens_morris.cli.game_runner import GameRunner
 
-from src.db.manage_db import add_player, start_game, end_game, get_statistics, get_player_id_by_name
+from nine_mens_morris.db.manage_db import add_player, start_game, end_game, get_player_id_by_name
 
 if __name__ == "__main__":
 
