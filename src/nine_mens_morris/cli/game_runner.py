@@ -1,3 +1,4 @@
+from nine_mens_morris.game.actions import Place, Remove, Move
 from nine_mens_morris.game.exceptions import *
 from nine_mens_morris.game.game import Game
 from nine_mens_morris.game.game_state import GameState
@@ -14,16 +15,16 @@ class GameRunner:
             try:
                 if self.game.get_mills_formed():
                     pos_id = int(input("Enter position of opponents piece to remove: "))
-                    self.game.play_round("remove", pos_id)
+                    self.game.apply(Remove(pos_id))
 
                 elif self.game.get_state() == GameState.PLACING:
                     pos_id = int(input("Enter position where do you want to place your piece: "))
-                    self.game.play_round("place", pos_id)
+                    self.game.apply(Place(pos_id))
 
                 elif self.game.get_state() == GameState.MOVING or self.game.get_state() == GameState.JUMPING:
                     from_pos_id = int(input("Enter from which position do you want to move your piece: "))
                     to_pos_id = int(input("Enter to which position do you want to place your piece: "))
-                    self.game.play_round("move", from_pos_id, to_pos_id)
+                    self.game.apply(Move(from_pos_id, to_pos_id))
             except ValueError:
                 print("Error: Invalid input. Please enter a valid number.\n")
             except (PositionOutOfBoundsError, PositionAlreadyOccupiedError,
