@@ -122,12 +122,21 @@ class Board:
         
         # Stones that are part of the mill cannot be removed
         for mill in MILLS:
-             if position_id in mill and all(self._position(pid).get_occupied_by() == opponent for pid in mill):
+             if position_id in mill and all(self.occupied_by(pid) == opponent for pid in mill):
                   raise InvalidPieceRemovalError(position_id,
                                                  curr_player.get_id(),
                                                  opponent.get_id())
 
         position.set_occupied_by(None)
+
+    def is_in_mill(self, position_id: int, opponent: Player) -> bool:
+        is_in_mill: bool = False
+        for mill in MILLS:
+            if position_id in mill and\
+                    all(self.occupied_by(pid) == opponent for pid in mill):
+                is_in_mill = True
+                break
+        return is_in_mill
 
     def get_mill(self, position_id: int, player: Player) -> list[int] | None:
         for mill in MILLS:
