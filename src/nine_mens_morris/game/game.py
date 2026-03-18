@@ -1,3 +1,4 @@
+from nine_mens_morris.game.actions import Action
 from nine_mens_morris.game.player import Player
 from nine_mens_morris.game.board import Board
 from nine_mens_morris.game.game_state import GameState
@@ -78,6 +79,16 @@ class Game:
                 return player
         return None
 
+    def apply(self, action: Action):
+        match action.kind:
+            case "place":
+                self.play_round(action.kind, action.pos)
+            case "move":
+                self.play_round(action.kind, action.pos_from, action.pos_to)
+            case "remove":
+                self.play_round(action.kind, action.pos)
+            case _:
+                raise ValueError(f"Unknown action '{action}'")
 
     def play_round(self, action: str, *args) -> None:
         """
