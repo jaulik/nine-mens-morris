@@ -74,6 +74,9 @@ class Board:
             if pos.get_occupied_by() == player
         )
 
+    def empty_positions(self) -> tuple[int, ...]:
+        return tuple(pid for pid in range(24) if self.occupied_by(pid) is None)
+
     def place_piece(self, player: Player, position_id: int) -> None:
         if not (0 <= position_id <= 23):
             raise PositionOutOfBoundsError(position_id)
