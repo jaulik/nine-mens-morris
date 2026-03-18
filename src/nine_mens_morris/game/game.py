@@ -1,3 +1,4 @@
+from nine_mens_morris.game.action_generator import ActionGenerator
 from nine_mens_morris.game.actions import Action, Remove, Move, Place
 from nine_mens_morris.game.player import Player
 from nine_mens_morris.game.board import Board
@@ -13,6 +14,7 @@ class Game:
         self.__state = GameState.PLACING
         self.__mills_formed = False     # flag that the last move caused the creation of a mill
         self.__rounds = 0
+        self.__action_generator: ActionGenerator = ActionGenerator(self, board)
 
     def get_rounds(self):
         return self.__rounds
@@ -91,33 +93,7 @@ class Game:
                 raise ValueError(f"Unknown action '{action}'")
 
     def legal_actions_for_current_player(self) -> list[Action]:
-        if self.__mills_formed:
-            opponent_positions = self.__board.positions_occupied_by(self.get_opposite_player())
-            not_in_mill = [pos for pos in opponent_positions if not self.__board.is_in_mill(pos, self.get_opposite_player())]
-
-            if len(not_in_mill) > 0:
-                return [Remove(pos) for pos in not_in_mill]
-            # only allow removing stones that are part of opponents mill
-            # if opponent has no stones that are not a part of a mill
-            return [Remove(pos) for pos in opponent_positions]
-
-        if self.get_state() == GameState.PLACING:
-            return [Place(pos) for pos in self.__board.empty_positions()]
-
-        if self.get_state() == GameState.MOVING or self.get_state() == GameState.JUMPING:
-            actions: list[Action] = []
-
-            for from_pos in self.__board.positions_occupied_by(self.get_current_player()):
-                if self.get_current_player().can_jump():
-                    empty_positions = self.__board.empty_positions()
-                    for to_pos in empty_positions:
-                        actions.append(Move(from_pos, to_pos))
-                else:
-                    for to_pos in self.__board.neighbors_of(from_pos):
-                        if self.__board.occupied_by(to_pos) is None:
-                            actions.append(Move(from_pos, to_pos))
-            return actions
-        return []
+        return self.__action_generator.legal_actions()
 
     def play_round(self, action: str, *args) -> None:
         """
