@@ -12,7 +12,6 @@ class TestLegalActions(unittest.TestCase):
         self.anika = Player("anika", 11)
         self.milan = Player("milan", 12)
         self.game = Game(self.anika, self.milan)
-        self.board = Board()
 
     def test_placing_returns_all_empty_positions(self):
         self.assertEqual(self.game.get_state(), GameState.PLACING)
@@ -25,8 +24,8 @@ class TestLegalActions(unittest.TestCase):
         self.assertEqual(positions, list(range(24)))
 
     def test_move_only_neighbors_when_not_jumping(self):
-        self.game.play_round("place", 0)
-        self.game.play_round("place", 1)
+        self.game.apply(Place(0))
+        self.game.apply(Place(1))
 
         self.assertFalse(self.game.get_mills_formed())
         self.anika.set_pieces_in_hand(0)
@@ -45,8 +44,8 @@ class TestLegalActions(unittest.TestCase):
         self.assertEqual({(0,9)}, moves)
 
     def test_move_when_jumping(self):
-        self.game.play_round("place", 0)
-        self.game.play_round("place", 1)
+        self.game.apply(Place(0))
+        self.game.apply(Place(1))
 
         self.assertFalse(self.game.get_mills_formed())
         self.anika.set_pieces_in_hand(0)
@@ -68,11 +67,11 @@ class TestLegalActions(unittest.TestCase):
         self.assertEqual(possible_moves, moves)
 
     def test_remove_when_mill_formed(self):
-        self.game.play_round("place", 0) # anika (p1)
-        self.game.play_round("place", 9) # milan (p2)
-        self.game.play_round("place", 1) # p1
-        self.game.play_round("place", 3) # p2
-        self.game.play_round("place", 2) # p1
+        self.game.apply(Place(0)) # anika (p1)
+        self.game.apply(Place(9)) # milan (p2)
+        self.game.apply(Place(1)) # p1
+        self.game.apply(Place(3)) # p2
+        self.game.apply(Place(2)) # p1
 
         self.assertEqual(self.game.get_current_player(), self.anika)
         self.assertTrue(self.game.get_mills_formed())

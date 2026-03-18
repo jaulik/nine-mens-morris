@@ -14,7 +14,10 @@ class Game:
         self.__state = GameState.PLACING
         self.__mills_formed = False     # flag that the last move caused the creation of a mill
         self.__rounds = 0
-        self.__action_generator: ActionGenerator = ActionGenerator(self, board)
+        self.__action_generator: ActionGenerator = ActionGenerator(self, self.__board)
+
+    def get_action_generator(self) -> ActionGenerator:
+        return self.__action_generator
 
     def get_rounds(self):
         return self.__rounds
@@ -53,15 +56,6 @@ class Game:
         else:
             self.__current_player = self.get_player1()
 
-    def get_all_possible_moves(self, player: Player) -> list[int]:
-        moves: list[int] = []
-
-        for from_pos_id in self.__board.positions_occupied_by(player):
-            for to_pos_id in self.__board.neighbors_of(from_pos_id):
-                if self.__board.occupied_by(to_pos_id) is None:
-                    moves.append(to_pos_id)
-        return moves
-
     def game_over(self) -> bool:
         if self.get_state() == GameState.GAME_OVER:
             return True
@@ -70,52 +64,48 @@ class Game:
         if self.get_state() == GameState.PLACING:
             return (opponent.get_pieces_on_board() + opponent.get_pieces_in_hand()) <= 2
 
-        return opponent.get_pieces_on_board() <= 2 or self.get_all_possible_moves(opponent) == []
+        return opponent.get_pieces_on_board() <= 2 or\
+            self.__action_generator.legal_actions_for(opponent) == []
+
+    def _has_any_move(self, player: Player) -> bool:
+        if player.can_jump():
+            return len(self.__board.empty_positions()) > 0
+
+        for from_pos in self.__board.positions_occupied_by(player):
+            for to_pos in self.__board.neighbors_of(from_pos):
+                if self.__board.occupied_by(to_pos) is None:
+                    return True
+        return False
 
     def get_winner(self) -> Player | None:
         if self.get_state() != GameState.GAME_OVER:
             return None
         players = [self.get_player1(), self.get_player2()]
         for player in players:
-            if player.get_pieces_on_board() >= 3 and self.get_all_possible_moves(player) != []:
+            if player.get_pieces_on_board() >= 3 and self._has_any_move(player):
                 return player
         return None
-
-    def apply(self, action: Action):
-        match action.kind:
-            case "place":
-                self.play_round(action.kind, action.pos)
-            case "move":
-                self.play_round(action.kind, action.pos_from, action.pos_to)
-            case "remove":
-                self.play_round(action.kind, action.pos)
-            case _:
-                raise ValueError(f"Unknown action '{action}'")
 
     def legal_actions_for_current_player(self) -> list[Action]:
         return self.__action_generator.legal_actions()
 
-    def play_round(self, action: str, *args) -> None:
-        """
-        action: "place", "move", "remove"
-        args:
-          - place:   position_id
-          - move:    from_id, to_id
-          - remove:  position_id
-        """
-        if action == "place":
-            self._handle_place(args[0])
-        elif action == "move":
-            self._handle_move(args[0], args[1])
-        elif action == "remove":
-            self._handle_remove(args[0])
-        else:
-            raise ValueError(f"Unknown action '{action}'")
+    def apply(self, action: Action):
+        if action not in self.legal_actions_for_current_player():
+            raise ValueError("Illegal action")
+
+        match action.kind:
+            case "place":
+                self._handle_place(action.pos)
+            case "move":
+                self._handle_move(action.pos_from, action.pos_to)
+            case "remove":
+                self._handle_remove(action.pos)
+            case _:
+                raise ValueError(f"Unknown action '{action}'")
 
         self.__rounds += 1
         if self.__state != GameState.GAME_OVER and self.game_over():
             self.__state = GameState.GAME_OVER
-
 
     def _handle_place(self, pos_id: int) -> None:
         if self.get_state() != GameState.PLACING:
