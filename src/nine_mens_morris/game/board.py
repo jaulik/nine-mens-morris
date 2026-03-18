@@ -130,13 +130,10 @@ class Board:
         position.set_occupied_by(None)
 
     def is_in_mill(self, position_id: int, opponent: Player) -> bool:
-        is_in_mill: bool = False
-        for mill in MILLS:
-            if position_id in mill and\
-                    all(self.occupied_by(pid) == opponent for pid in mill):
-                is_in_mill = True
-                break
-        return is_in_mill
+        return any(position_id in mill and\
+                   all(self.occupied_by(pid) == opponent for pid in mill)\
+                   for mill in MILLS)
+
 
     def get_mill(self, position_id: int, player: Player) -> list[int] | None:
         for mill in MILLS:
