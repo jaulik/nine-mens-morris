@@ -59,22 +59,20 @@ class Game:
     def game_over(self) -> bool:
         if self.get_state() == GameState.GAME_OVER:
             return True
+        return self._is_defeated(self.__player1) or self._is_defeated(self.__player2)
 
-        opponent = self.get_opposite_player()
+    def _is_defeated(self, player: Player) -> bool:
         if self.get_state() == GameState.PLACING:
-            return (opponent.get_pieces_on_board() + opponent.get_pieces_in_hand()) <= 2
+            return player.get_pieces_on_board() + player.get_pieces_in_hand() <= 2
 
-        return opponent.get_pieces_on_board() <= 2 or\
-            not self.__action_generator.has_any_move(opponent)
+        return player.get_pieces_on_board() <= 2 or\
+            not self.__action_generator.has_any_move(player)
 
     def get_winner(self) -> Player | None:
-        if self.get_state() != GameState.GAME_OVER:
-            return None
-        players = [self.get_player1(), self.get_player2()]
-        for player in players:
-            if player.get_pieces_on_board() >= 3 and\
-                    self.__action_generator.has_any_move(player):
-                return player
+        if self.get_state() == GameState.GAME_OVER:
+            if self._is_defeated(self.__player1):
+                return self.__player2
+            return self.__player1
         return None
 
     def legal_actions_for_current_player(self) -> list[Action]:
