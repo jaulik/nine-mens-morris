@@ -1,39 +1,43 @@
+from __future__ import annotations
+
+from nine_mens_morris.cli.io import IO
 from nine_mens_morris.game.exceptions import *
 from nine_mens_morris.game.game import Game
 from nine_mens_morris.game.game_state import GameState
+from nine_mens_morris.controllers.base import Controller
 
 class GameRunner:
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, controller_player1: Controller, controller_player2: Controller, io: IO):
         self.game = game
+        self.controller_player1 = controller_player1
+        self.controller_player2 = controller_player2
+        self.io = io
+
+    def _get_controller_for_current_player(self) -> Controller:
+        if self.game.get_current_player() == self.game.get_player1():
+            return self.controller_player1
+        return self.controller_player2
 
     def run(self):
         while self.game.get_state() != GameState.GAME_OVER:
-            print(self.game.render_board())
-            print("Current_player: ", self.game.get_current_player().get_name())
+            self.io.write(self.game.render_board())
+            self.io.write("Current_player: " + self.game.get_current_player().get_name())
 
+            controller = self._get_controller_for_current_player()
             try:
-                if self.game.get_mills_formed():
-                    pos_id = int(input("Enter position of opponents piece to remove: "))
-                    self.game.play_round("remove", pos_id)
+                action = controller.choose_action(self.game)
+                self.game.apply(action)
 
-                elif self.game.get_state() == GameState.PLACING:
-                    pos_id = int(input("Enter position where do you want to place your piece: "))
-                    self.game.play_round("place", pos_id)
-
-                elif self.game.get_state() == GameState.MOVING or self.game.get_state() == GameState.JUMPING:
-                    from_pos_id = int(input("Enter from which position do you want to move your piece: "))
-                    to_pos_id = int(input("Enter to which position do you want to place your piece: "))
-                    self.game.play_round("move", from_pos_id, to_pos_id)
             except ValueError:
-                print("Error: Invalid input. Please enter a valid number.\n")
+                self.io.write("Error: Invalid input or illegal action. Please enter a valid number.\n")
             except (PositionOutOfBoundsError, PositionAlreadyOccupiedError,
                     InvalidMoveError, InvalidPieceRemovalError) as e:
-                print(f"Invalid action: {e}\n")
+                self.io.write(f"Invalid action: {e}\n")
 
         winner = self.game.get_winner()
         if winner:
-            print("GAME OVER! Winner: ", winner.get_name(), " ID: ", winner.get_id())
+            self.io.write("GAME OVER! Winner: " + winner.get_name() + " ID: " + str(winner.get_id()))
         else:
-            print("GAME OVER! No winner was determined.")
+            self.io.write("GAME OVER! No winner was determined.")
 
         return winner

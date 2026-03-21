@@ -1,7 +1,7 @@
 import unittest
 
+from nine_mens_morris.game.actions import Place, Remove, Move
 from nine_mens_morris.game.board import Board
-from nine_mens_morris.game.exceptions import PositionAlreadyOccupiedError
 
 from nine_mens_morris.game.game_state import GameState
 from nine_mens_morris.game.game import Game
@@ -30,27 +30,25 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.game.get_current_player(), self.milan)
 
     def test_place_piece(self):
-        self.game.play_round("place", 0)
+        self.game.apply(Place(0))
+        self.game.apply(Place(1))
         self.assertEqual(self.anika.get_pieces_in_hand(), 8)
         self.assertEqual(self.anika.get_pieces_on_board(), 1)
-        self.assertEqual(self.game.get_all_possible_moves(self.anika), [1, 9])
-        self.assertEqual(self.game.get_current_player(), self.milan)
+        self.game.set_state(GameState.MOVING)
+        self.assertEqual(self.game.get_action_generator().legal_actions_for(self.anika), [Move(0, 9)])
+        self.assertEqual(self.game.get_current_player(), self.anika)
 
     def test_place_on_occupied_position(self):
-        self.game.play_round("place", 0)
+        self.game.apply(Place(0))
 
-        with self.assertRaises(PositionAlreadyOccupiedError):
-            self.game.play_round("place", 0)
+        with self.assertRaises(ValueError):
+            self.game.apply(Place(0))
         self.assertEqual(self.game.get_current_player(), self.milan)
 
     def test_transition_to_moving_state(self):
         for i in range(18):
-            self.game.play_round("place", i)
+            self.game.apply(Place(i))
         self.assertEqual(self.game.get_state(), GameState.MOVING)
-
-    def test_invalid_action(self):
-        with self.assertRaises(ValueError):
-            self.game.play_round("fly", 0)
 
     def test_jump(self):
         self.anika.set_pieces_on_board(3)
@@ -64,19 +62,19 @@ class TestGame(unittest.TestCase):
         game = Game(self.anika, self.milan, board)
         game.set_state(GameState.JUMPING)
 
-        game.play_round("move", 0, 5)
+        game.apply(Move(0, 5))
         self.assertIsNone(game.get_player_on_position(0))
         self.assertEqual(game.get_player_on_position(5), self.anika)
 
     def test_remove(self):
-        self.game.play_round("place", 0)
-        self.game.play_round("place", 10)
-        self.game.play_round("place", 1)
-        self.game.play_round("place", 20)
-        self.game.play_round("place", 2)
+        self.game.apply(Place(0))
+        self.game.apply(Place(10))
+        self.game.apply(Place(1))
+        self.game.apply(Place(20))
+        self.game.apply(Place(2))
         # anika created mill
         self.assertEqual(self.game.get_player_on_position(10), self.milan)
-        self.game.play_round("remove", 10)
+        self.game.apply(Remove(10))
         self.assertIsNone(self.game.get_player_on_position(10))
 
     def test_game_over_winner(self):
@@ -94,7 +92,6 @@ class TestGame(unittest.TestCase):
         self.assertTrue(game.game_over())
         self.assertEqual(game.get_winner(), self.anika)
 
-    # TODO: test play + play_round
 
 if __name__ == "__main__":
     unittest.main()
