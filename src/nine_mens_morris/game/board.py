@@ -78,16 +78,32 @@ class Board:
         return tuple(pid for pid in range(24) if self.occupied_by(pid) is None)
 
     def place_piece(self, player: Player, position_id: int) -> None:
-        self._position(position_id).set_occupied_by(player)
+        position = self._position(position_id)
+        if position.get_occupied_by() is not None:
+            raise PositionAlreadyOccupiedError(position)
+        position.set_occupied_by(player)
 
     def move_piece(self, from_pos_id: int, to_pos_id: int, curr_player: Player) -> None:
         from_pos = self._position(from_pos_id)
         to_pos = self._position(to_pos_id)
 
+        if from_pos.get_occupied_by() != curr_player:
+            raise InvalidMoveError(from_pos, to_pos)
+        if to_pos.get_occupied_by() is not None:
+            raise PositionAlreadyOccupiedError(to_pos)
+        if to_pos_id not in from_pos.get_neighbors() and not curr_player.can_jump():
+            raise InvalidMoveError(from_pos, to_pos)
+
         to_pos.set_occupied_by(from_pos.get_occupied_by())
         from_pos.set_occupied_by(None)
 
     def remove_piece(self, position_id: int, curr_player: Player, opponent: Player) -> None:
+        occupied_by = self._position(position_id).get_occupied_by()
+        if occupied_by != opponent or occupied_by is None:
+            raise InvalidPieceRemovalError(position_id,
+                                           curr_player.get_id(),
+                                           occupied_by.get_id() if occupied_by is not None else None)
+
         # If opponent has at least one stone NOT in a mill, player cannot remove a stone in a mill.
         opponent_positions = self.positions_occupied_by(opponent)
         opponent_has_not_in_mill = any(not self.is_in_mill(pid, opponent) for pid in opponent_positions)
@@ -96,9 +112,9 @@ class Board:
 
         self._position(position_id).set_occupied_by(None)
 
-    def is_in_mill(self, position_id: int, opponent: Player) -> bool:
+    def is_in_mill(self, position_id: int, player: Player) -> bool:
         return any(position_id in mill and\
-                   all(self.occupied_by(pid) == opponent for pid in mill)\
+                   all(self.occupied_by(pid) == player for pid in mill)\
                    for mill in MILLS)
 
 

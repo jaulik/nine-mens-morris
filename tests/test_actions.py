@@ -1,6 +1,5 @@
 import unittest
 
-from nine_mens_morris.game.board import Board
 from nine_mens_morris.game.game import Game
 from nine_mens_morris.game.game_state import GameState
 from nine_mens_morris.game.player import Player

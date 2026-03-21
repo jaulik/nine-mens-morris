@@ -24,7 +24,7 @@ Game Rules & Instructions:
     Mills:
     - A mill is formed when three of your pieces align in a straight line (horizontal or vertical).
     - When you create a mill, you may remove one of your opponent's pieces.
-    - You cannot remove pieces that are currently part of a mill.
+    - You cannot remove pieces that are currently part of a mill, unless opponent has no other pieces.
 
     Game Over:
     - The game ends when a player has fewer than 3 pieces or no legal moves.

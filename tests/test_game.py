@@ -2,7 +2,6 @@ import unittest
 
 from nine_mens_morris.game.actions import Place, Remove, Move
 from nine_mens_morris.game.board import Board
-from nine_mens_morris.game.exceptions import PositionAlreadyOccupiedError
 
 from nine_mens_morris.game.game_state import GameState
 from nine_mens_morris.game.game import Game
