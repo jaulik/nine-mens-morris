@@ -67,7 +67,8 @@ Game Rules & Instructions:
 
     game_id = start_game(player1.get_id(), player2.get_id())
     game = Game(player1, player2)
-    game_runner = GameRunner(game, controller_player1=HumanController(), controller_player2=HumanController(), io=ConsoleIO())
+    game_runner = GameRunner(game, controller_player1=HumanController(ConsoleIO()),
+                             controller_player2=HumanController(ConsoleIO()), io=ConsoleIO())
 
     winner = game_runner.run()
     end_game(winner.get_id() if winner else None, game.get_rounds(), game_id)

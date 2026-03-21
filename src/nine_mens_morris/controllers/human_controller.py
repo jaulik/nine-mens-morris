@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from nine_mens_morris.cli.console_io import ConsoleIO
+from nine_mens_morris.cli.io import IO
 from nine_mens_morris.game.actions import Action, Remove, Move, Place
 from nine_mens_morris.game.game import Game
 from nine_mens_morris.game.game_state import GameState
 
 class HumanController:
-    def __init__(self):
-        self.io = ConsoleIO()
+    def __init__(self, io: IO):
+        self.io = io
 
     def choose_action(self, game: Game) -> Action:
         if game.get_mills_formed():
