@@ -87,10 +87,11 @@ class TestBoard(unittest.TestCase):
         self.assertIsNone(self.board.occupied_by(10))
 
 
-    def test_remove_piece_in_mill(self):
+    def test_remove_piece_in_mill_not_allowed(self):
         self.board.place_piece(self.anika, 0)
         self.board.place_piece(self.anika, 1)
         self.board.place_piece(self.anika, 2)
+        self.board.place_piece(self.anika, 3)
         with self.assertRaises(InvalidPieceRemovalError):
             self.board.remove_piece(0, self.milan, self.anika)
 
@@ -101,6 +102,15 @@ class TestBoard(unittest.TestCase):
 
         self.assertEqual(self.board.get_mill(0, self.anika), [0, 1, 2])
         self.assertIsNone(self.board.get_mill(3, self.anika))
+
+    def test_remove_piece_in_mill_allowed_if_all_opponent_pieces_are_in_mills(self):
+        self.board.place_piece(self.milan, 0)
+        self.board.place_piece(self.milan, 1)
+        self.board.place_piece(self.milan, 2)
+
+        # Should be allowed because opponent has no stone outside of mills
+        self.board.remove_piece(0, self.anika, self.milan)
+        self.assertIsNone(self.board.occupied_by(0))
 
 if __name__ == '__main__':
     unittest.main()

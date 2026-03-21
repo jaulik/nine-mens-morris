@@ -119,13 +119,13 @@ class Board:
             raise InvalidPieceRemovalError(position_id,
                                            curr_player.get_id(),
                                            occupied_by.get_id() if occupied_by is not None else None)
-        
-        # Stones that are part of the mill cannot be removed
-        for mill in MILLS:
-             if position_id in mill and all(self.occupied_by(pid) == opponent for pid in mill):
-                  raise InvalidPieceRemovalError(position_id,
-                                                 curr_player.get_id(),
-                                                 opponent.get_id())
+
+        # If opponent has at least one stone NOT in a mill, player cannot remove a stone in a mill.
+        opponent_positions = self.positions_occupied_by(opponent)
+        opponent_has_not_in_mill = any(not self.is_in_mill(pid, opponent) for pid in opponent_positions)
+
+        if opponent_has_not_in_mill and self.is_in_mill(position_id, opponent):
+            raise InvalidPieceRemovalError(position_id, curr_player.get_id(), opponent.get_id())
 
         position.set_occupied_by(None)
 
