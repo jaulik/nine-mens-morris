@@ -11,16 +11,16 @@ class HumanController:
 
     def choose_action(self, game: Game) -> Action:
         if game.get_mills_formed():
-            pos_id = self.io.read_int("Enter position of opponents piece to remove: ")
+            pos_id = self.io.read_int("Enter the position of the opponent's piece to remove: ")
             return Remove(pos_id)
 
         if game.get_state() == GameState.PLACING:
-            pos_id = self.io.read_int("Enter position where do you want to place your piece: ")
+            pos_id = self.io.read_int("Enter the position where you want to place your piece: ")
             return Place(pos_id)
 
         if game.get_state() in {GameState.MOVING, GameState.JUMPING}:
-            from_pos_id = self.io.read_int("Enter from which position do you want to move your piece: ")
-            to_pos_id = self.io.read_int("Enter to which position do you want to place your piece: ")
+            from_pos_id = self.io.read_int("Enter the position from which you want to move your piece: ")
+            to_pos_id = self.io.read_int("Enter the position to which you want to move your piece: ")
             return Move(from_pos_id, to_pos_id)
 
         raise RuntimeError(f"Unsupported state for human input: {game.get_state()}")
