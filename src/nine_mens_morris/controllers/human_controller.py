@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+from nine_mens_morris.cli.io import IO
+from nine_mens_morris.game.actions import Action, Remove, Move, Place
+from nine_mens_morris.game.game import Game
+from nine_mens_morris.game.game_state import GameState
+
+class HumanController:
+    def __init__(self, io: IO):
+        self.io = io
+
+    def choose_action(self, game: Game) -> Action:
+        if game.get_mills_formed():
+            pos_id = self.io.read_int("Enter the position of the opponent's piece to remove: ")
+            return Remove(pos_id)
+
+        if game.get_state() == GameState.PLACING:
+            pos_id = self.io.read_int("Enter the position where you want to place your piece: ")
+            return Place(pos_id)
+
+        if game.get_state() in {GameState.MOVING, GameState.JUMPING}:
+            from_pos_id = self.io.read_int("Enter the position from which you want to move your piece: ")
+            to_pos_id = self.io.read_int("Enter the position to which you want to move your piece: ")
+            return Move(from_pos_id, to_pos_id)
+
+        raise RuntimeError(f"Unsupported state for human input: {game.get_state()}")

@@ -1,3 +1,5 @@
+from nine_mens_morris.cli.console_io import ConsoleIO
+from nine_mens_morris.controllers.human_controller import HumanController
 from nine_mens_morris.game.player import Player
 from nine_mens_morris.game.game import Game
 from nine_mens_morris.cli.game_runner import GameRunner
@@ -65,7 +67,9 @@ Game Rules & Instructions:
 
     game_id = start_game(player1.get_id(), player2.get_id())
     game = Game(player1, player2)
-    game_runner = GameRunner(game)
+    io = ConsoleIO()
+    game_runner = GameRunner(game, controller_player1=HumanController(io),
+                             controller_player2=HumanController(io), io=io)
 
     winner = game_runner.run()
     end_game(winner.get_id() if winner else None, game.get_rounds(), game_id)
