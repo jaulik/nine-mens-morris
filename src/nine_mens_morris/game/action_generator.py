@@ -14,7 +14,7 @@ class ActionGenerator:
         self.__game = game
         self.__board = board
 
-    def has_any_move(self ,player: Player) -> bool:
+    def has_any_move(self, player: Player) -> bool:
         if player.can_jump():
             return len(self.__board.empty_positions()) > 0
 

@@ -118,8 +118,10 @@ class Game:
 
 
     def _handle_move(self, from_pos_id: int, to_pos_id: int) -> None:
-        if self.get_state() not in {GameState.MOVING, GameState.JUMPING} or self.__mills_formed:
-            raise RuntimeError("Internal error: place in non-moving/jumping state or mills have been formed")
+        if self.get_state() not in {GameState.MOVING, GameState.JUMPING}:
+            raise RuntimeError("Internal error: place in non-moving/jumping state")
+        if self.__mills_formed:
+            raise RuntimeError("Internal error: cannot move while a mill removal is pending")
 
         self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
 
