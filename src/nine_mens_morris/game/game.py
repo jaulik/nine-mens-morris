@@ -70,9 +70,10 @@ class Game:
 
     def get_winner(self) -> Player | None:
         if self.get_state() == GameState.GAME_OVER:
-            if self._is_defeated(self.__player1):
-                return self.__player2
-            return self.__player1
+            p1_defeated = self._is_defeated(self.__player1)
+            p2_defeated = self._is_defeated(self.__player2)
+            if p1_defeated and not p2_defeated: return self.__player2
+            elif p2_defeated and not p1_defeated: return self.__player1
         return None
 
     def legal_actions_for_current_player(self) -> list[Action]:
@@ -97,9 +98,6 @@ class Game:
             self.__state = GameState.GAME_OVER
 
     def _handle_place(self, pos_id: int) -> None:
-        if self.get_state() != GameState.PLACING:
-            return
-
         self.__board.place_piece(self.get_current_player(), pos_id)
         self.get_current_player().decrement_in_hand()
         self.get_current_player().increment_on_board()
@@ -117,10 +115,6 @@ class Game:
 
 
     def _handle_move(self, from_pos_id: int, to_pos_id: int) -> None:
-        valid_states = {GameState.MOVING, GameState.JUMPING}
-        if self.get_state() not in valid_states or self.__mills_formed:
-            return
-
         self.__board.move_piece(from_pos_id, to_pos_id, self.get_current_player())
 
         mill = self.__board.get_mill(to_pos_id, self.get_current_player())
