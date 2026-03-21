@@ -5,6 +5,7 @@ from nine_mens_morris.game.game import Game
 from nine_mens_morris.cli.game_runner import GameRunner
 
 from nine_mens_morris.db.manage_db import add_player, start_game, end_game, get_player_id_by_name
+from nine_mens_morris.db.sqlite_setup import create_tables
 
 if __name__ == "__main__":
 
@@ -57,6 +58,7 @@ Game Rules & Instructions:
             print(f" -> Welcome back, {name}! Your ID is {existing_id}")
             return Player(name, existing_id)
 
+    create_tables()
     player1 = login_player(1)
     while True:
         player2 = login_player(2)
