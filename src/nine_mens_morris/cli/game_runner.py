@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from nine_mens_morris.cli.io import IO
-from nine_mens_morris.controllers.base import Controller
-from nine_mens_morris.game.actions import Place, Remove, Move
 from nine_mens_morris.game.exceptions import *
 from nine_mens_morris.game.game import Game
 from nine_mens_morris.game.game_state import GameState
@@ -27,7 +25,7 @@ class GameRunner:
 
             controller = self._get_controller_for_current_player()
             try:
-                action = controller.choose_action(self.game, self.io)
+                action = controller.choose_action(self.game)
                 self.game.apply(action)
 
             except ValueError:
