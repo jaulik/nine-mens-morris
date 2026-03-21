@@ -65,24 +65,15 @@ class Game:
             return (opponent.get_pieces_on_board() + opponent.get_pieces_in_hand()) <= 2
 
         return opponent.get_pieces_on_board() <= 2 or\
-            self.__action_generator.legal_actions_for(opponent) == []
-
-    def _has_any_move(self, player: Player) -> bool:
-        if player.can_jump():
-            return len(self.__board.empty_positions()) > 0
-
-        for from_pos in self.__board.positions_occupied_by(player):
-            for to_pos in self.__board.neighbors_of(from_pos):
-                if self.__board.occupied_by(to_pos) is None:
-                    return True
-        return False
+            not self.__action_generator.has_any_move(opponent)
 
     def get_winner(self) -> Player | None:
         if self.get_state() != GameState.GAME_OVER:
             return None
         players = [self.get_player1(), self.get_player2()]
         for player in players:
-            if player.get_pieces_on_board() >= 3 and self._has_any_move(player):
+            if player.get_pieces_on_board() >= 3 and\
+                    self.__action_generator.has_any_move(player):
                 return player
         return None
 

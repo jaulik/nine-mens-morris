@@ -14,17 +14,26 @@ class ActionGenerator:
         self.__game = game
         self.__board = board
 
+    def has_any_move(self ,player: Player) -> bool:
+        if player.can_jump():
+            return len(self.__board.empty_positions()) > 0
+
+        for from_pos in self.__board.positions_occupied_by(player):
+            for to_pos in self.__board.neighbors_of(from_pos):
+                if self.__board.occupied_by(to_pos) is None:
+                    return True
+        return False
+
     def legal_actions(self) -> list[Action]:
         return self.legal_actions_for(self.__game.get_current_player())
 
     def legal_actions_for(self, player: Player) -> list[Action]:
         is_current_turn = (player == self.__game.get_current_player())
-        opponent = (self.__game.get_opposite_player() if is_current_turn
-                    else self.__game.get_current_player())
+        if not is_current_turn:
+            return []
+
+        opponent = self.__game.get_opposite_player()
         if self.__game.get_mills_formed():
-            # waiting for stone removal
-            if not is_current_turn:
-                return []
             opponent_positions = self.__board.positions_occupied_by(opponent)
             not_in_mill = [pos for pos in opponent_positions\
                            if not self.__board.is_in_mill(pos, opponent)]
