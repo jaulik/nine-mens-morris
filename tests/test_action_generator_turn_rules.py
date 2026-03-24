@@ -7,7 +7,7 @@ def test_non_current_player_has_no_move(game, player1, player2):
     assert game.get_action_generator().legal_actions_for(player2) == []
 
 def test_current_player_has_24_actions_in_the_beginning(game, player1):
-    assert game.legal_actions_for_current_player() == 24
+    assert len(game.legal_actions_for_current_player()) == 24
 
 def test_only_place_actions_in_placing(game, player1):
     assert game.get_state() == GameState.PLACING
