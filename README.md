@@ -24,6 +24,7 @@ From the repository root:
 ```bash
 python -m pip install -U pip setuptools wheel
 python -m pip install -e .
+python -m pip install -e ".[dev]"
 ```
 
 ### 3) Run the game
@@ -35,16 +36,22 @@ python -m nine_mens_morris
 
 ## Run tests
 
-### Unit tests (unittest)
+### Install test dependencies
 ```bash
-python -m unittest discover -s tests -p "test_*.py" -v
+python -m pip install -e ".[dev]"
 ```
 
-### Coverage (optional)
+### Unit tests (pytest)
 ```bash
-python -m pip install coverage
-coverage run -m unittest discover -s tests -p "test_*.py" -v
-coverage report -m
+pytest
+```
+
+### Coverage
+Coverage is enabled by default via pytest settings in `pyproject.toml`.
+
+To generate additional reports:
+```bash
+pytest --junitxml=reports/junit.xml --cov-report=xml:reports/coverage.xml
 ```
 
 ---

@@ -7,8 +7,20 @@ name = "nine-mens-morris"
 version = "0.1.0"
 requires-python = ">=3.10"
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers --cov=nine_mens_morris --cov-report=term-missing"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
