@@ -51,7 +51,7 @@ Coverage is enabled by default via pytest settings in `pyproject.toml`.
 
 To generate additional reports:
 ```bash
-pytest --junitxml=reports/junit.xml --cov-report=xml:reports/coverage.x
+pytest --junitxml=reports/junit.xml --cov-report=xml:reports/coverage.xml
 ```
 
 ---

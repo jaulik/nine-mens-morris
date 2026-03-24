@@ -22,7 +22,7 @@ def test_player_changes_after_legal_action(game, player1, player2):
     game.apply(legal_actions[0])
     assert game.get_current_player() == player2
 
-def test_player_doesnt_changes_after_illegal_action(game, player1, player2):
+def test_player_doesnt_change_after_illegal_action(game, player1, player2):
     assert game.get_current_player() == player1
     illegal_action = Move(0,1)
     with pytest.raises(ValueError, match='Illegal action'):

@@ -23,4 +23,5 @@ jobs:
 
     - name: Run tests (pytest)
       run: |
+          mkdir -p reports
           pytest --junitxml=reports/junit.xml --cov-report=xml:reports/coverage.xml
